@@ -5,7 +5,7 @@
 
     public class TransformationParserStrategy : IParserStrategy
     {
-        private const string EntityType = "Image";
+        private const string EntityType = "Transformation";
 
         public void AddObjectToContext(ObjectContext context, string[] entity)
         {
@@ -25,7 +25,7 @@
 
             if (entity.Length > 2)
             {
-                for (int line = 3; line < entity.Length; line++)
+                for (int line = 2; line < entity.Length; line++)
                 {
                     var elementsArray = entity[line].Split(' ');
                     if (elementsArray.First() == "T")

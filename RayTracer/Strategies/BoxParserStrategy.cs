@@ -22,8 +22,8 @@
         {
             return new Box
             {
-                Transformation = int.Parse(entity[3]),
-                Material = int.Parse(entity[4])
+                Transformation = int.Parse(entity[2]),
+                Material = int.Parse(entity[3])
             };
         }
     }

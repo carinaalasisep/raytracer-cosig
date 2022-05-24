@@ -21,9 +21,9 @@
         private Camera BuildCamera(string[] entity)
         {
             return new Camera(
-                transformation: int.Parse(entity[3]),
-                distance: double.Parse(entity[4]),
-                visionField: double.Parse(entity[5]));
+                transformation: int.Parse(entity[2]),
+                distance: double.Parse(entity[3]),
+                visionField: double.Parse(entity[4]));
         }
     }
 }

@@ -25,9 +25,12 @@
             foreach (var item in entitySeparation)
             {
                 var entity = item.Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
-                var objectType = entity.First();
-                var selectedStrategy = this.strategies.First(s => s.CanHandle(objectType));
-                selectedStrategy.AddObjectToContext(context, entity);
+                if(entity.FirstOrDefault() != null)
+                {
+                    var objectType = entity.First();
+                    var selectedStrategy = this.strategies.First(s => s.CanHandle(objectType));
+                    selectedStrategy.AddObjectToContext(context, entity);
+                }
             }
         }
     }

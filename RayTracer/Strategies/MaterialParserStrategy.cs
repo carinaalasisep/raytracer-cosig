@@ -28,10 +28,17 @@
                 materialData.AddRange(entity[line].Split(' '));
             }
 
-            return new Material(red: double.Parse(materialData[2]),
-                green: double.Parse(materialData[3]),
-                blue: double.Parse(materialData[4]),
-                coefficients: new double[] { double.Parse(materialData[5]), double.Parse(materialData[6]), double.Parse(materialData[7]) });
+            return new Material(red: double.Parse(materialData[0]),
+                green: double.Parse(materialData[1]),
+                blue: double.Parse(materialData[2]),
+                coefficients: new double[] 
+                {
+                    double.Parse(materialData[3]),
+                    double.Parse(materialData[4]),
+                    double.Parse(materialData[5]),
+                    double.Parse(materialData[6]),
+                    double.Parse(materialData[7]),
+                });
         }
     }
 }

@@ -4,7 +4,7 @@
 
     public class SphereParserStrategy : IParserStrategy
     {
-        private const string EntityType = "Box";
+        private const string EntityType = "Sphere";
 
         public void AddObjectToContext(ObjectContext context, string[] entity)
         {
@@ -22,8 +22,8 @@
         {
             return new Sphere
             {
-                Transformation = int.Parse(entity[3]),
-                Material = int.Parse(entity[4])
+                Transformation = int.Parse(entity[2]),
+                Material = int.Parse(entity[3])
             };
         }
     }
