@@ -2,19 +2,19 @@
 {
     public class Light
     {
-        public int Transformation;
+        public int Transformation { get; set; }
 
-        public Color3 Color;
+        public Color3 Color { get; set; }
 
-        public Light(int transformation, double[] rgb)
+        public Light(int transformation, double red, double green, double blue)
         {
             this.Transformation = transformation;
 
             this.Color = new Color3
             {
-                Red = rgb[0],
-                Green = rgb[1],
-                Blue = rgb[2]
+                Red = red,
+                Green = green,
+                Blue = blue
             };
         }
     }

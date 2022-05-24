@@ -2,8 +2,8 @@
 {
     public abstract class Object3D
     {
-        public int Transformation;
+        public int Transformation { get; set; }
 
-        public int Material;
+        public int Material { get; set; }
     }
 }

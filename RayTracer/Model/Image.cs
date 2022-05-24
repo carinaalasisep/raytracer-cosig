@@ -2,11 +2,11 @@
 {
     public class Image
     {
-        public Color3 Color3;
+        public Color3 Color3 { get; set; }
 
-        public int Horizontal;
+        public int Horizontal { get; set; }
 
-        public int Vertical;
+        public int Vertical { get; set; }
 
         public Image(
             int horizontal,

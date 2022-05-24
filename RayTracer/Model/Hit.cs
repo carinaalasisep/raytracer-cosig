@@ -4,16 +4,16 @@
 
     class Hit
     {
-        public bool Found;
+        public bool Found { get; set; }
 
-        public Material Material;
+        public Material Material { get; set; }
 
-        public Vector3 Point;
+        public Vector3 Point { get; set; }
 
-        public Vector3 Normal;
+        public Vector3 Normal { get; set; }
 
-        public double Distance; //t
+        public double Distance { get; set; } //t
 
-        public double MinDistance; //tmin
+        public double MinDistance { get; set; } //tmin
     }
 }

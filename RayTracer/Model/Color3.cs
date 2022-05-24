@@ -2,10 +2,10 @@
 {
     public class Color3
     {
-        public double Red = 0;
+        public double Red { get; set; } = 0;
 
-        public double Green = 0;
+        public double Green { get; set; } = 0;
 
-        public double Blue = 0;
+        public double Blue { get; set; } = 0;
     }
 }

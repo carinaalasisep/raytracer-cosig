@@ -2,11 +2,11 @@
 {
     public class Camera
     {
-        public int Transformation;
+        public int Transformation { get; set; }
 
-        public double Distance;
+        public double Distance { get; set; }
 
-        public double VisionField;
+        public double VisionField { get; set; }
 
         public Camera(
             int transformation,

@@ -2,25 +2,25 @@
 {
     public class Material
     {
-        public Color3 Color;
+        public Color3 Color { get; set; }
 
-        public double Environment; // 0.0 <= __ <= 1.0
+        public double Environment { get; set; } // 0.0 <= __ <= 1.0
 
-        public double Difuse;  // 0.0 <= __ <= 1.0
+        public double Difuse { get; set; }  // 0.0 <= __ <= 1.0
 
-        public double Specular;  // 0.0 <= __ <= 1.0
+        public double Specular { get; set; }  // 0.0 <= __ <= 1.0
 
-        public double Refraction;  // 0.0 <= __ <= 1.0
+        public double Refraction { get; set; }  // 0.0 <= __ <= 1.0
 
-        public double RefractionIdex; // >1.0
+        public double RefractionIdex { get; set; } // >1.0
 
-        public Material(double[] rgb, double[] coefficients)
+        public Material(double red, double green, double blue, double[] coefficients)
         {
             this.Color = new Color3
             {
-                Red = rgb[0],
-                Green = rgb[1],
-                Blue = rgb[2]
+                Red = red,
+                Green = green,
+                Blue = blue
             };
 
             this.Environment = coefficients[0];

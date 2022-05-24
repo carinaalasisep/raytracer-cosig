@@ -6,7 +6,17 @@
 
     public class Parser
     {
-        private readonly IParserStrategy[] strategies = new IParserStrategy[]{new ImageParserStrategy(), new BoxParserStrategy()};
+        private readonly IParserStrategy[] strategies = new IParserStrategy[]
+        {
+            new ImageParserStrategy(),
+            new TransformationParserStrategy(),
+            new MaterialParserStrategy(),
+            new CameraParserStrategy(),
+            new LightParserStrategy(),
+            new TrianglesParserStrategy(),
+            new BoxParserStrategy(),
+            new SphereParserStrategy()
+        };
 
         public void Parse(string fileContent, ObjectContext context) {
             var fileWithoutTabs = fileContent.Replace("\t", string.Empty);

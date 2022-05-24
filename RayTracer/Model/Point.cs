@@ -2,10 +2,10 @@
 {
     public class Point
     {
-        public int X;
+        public int X { get; set; }
 
-        public int Y;
+        public int Y { get; set; }
 
-        public int Z;
+        public int Z { get; set; }
     }
 }

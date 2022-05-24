@@ -2,15 +2,15 @@
 {
     using RayTracer.Model.Objects;
 
-    public class BoxParserStrategy : IParserStrategy
+    public class SphereParserStrategy : IParserStrategy
     {
         private const string EntityType = "Box";
 
         public void AddObjectToContext(ObjectContext context, string[] entity)
         {
-            var box = this.BuildBox(entity);
+            var sphere = this.BuildSphere(entity);
 
-            context.BoxesScene.Add(box);
+            context.SpheresScene.Add(sphere);
         }
 
         public bool CanHandle(string entityName)
@@ -18,9 +18,9 @@
             return entityName == EntityType;
         }
 
-        private Box BuildBox(string[] entity)
+        private Sphere BuildSphere(string[] entity)
         {
-            return new Box
+            return new Sphere
             {
                 Transformation = int.Parse(entity[3]),
                 Material = int.Parse(entity[4])
