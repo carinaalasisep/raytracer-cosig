@@ -19,11 +19,11 @@
             this.Material = material;
             this.P0 = v0;
             this.P1 = v1;
-            this.P2= v2;
-            this.Normal = this.NormalizeTriangle(v0,v1,v2);
+            this.P2 = v2;
+            this.Normal = this.Normalize(v0,v1,v2);
         }
 
-        private Vector3 NormalizeTriangle(Vector3 v0, Vector3 v1, Vector3 v2)
+        private Vector3 Normalize(Vector3 v0, Vector3 v1, Vector3 v2)
         {
             var newV1 = Vector3.Subtract(v1, v0);
             var newV2 = Vector3.Subtract(v2, v0);
@@ -39,6 +39,11 @@
                 Y = (float)(newY / size),
                 Z = (float)(newZ / size)
             };
+        }
+
+        public override bool Intersect(Ray ray, Hit hit)
+        {
+            throw new NotImplementedException();
         }
     }
 }

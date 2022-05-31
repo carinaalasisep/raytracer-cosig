@@ -2,7 +2,7 @@
 {
     using System.Numerics;
 
-    class Hit
+    public class Hit
     {
         public bool Found { get; set; }
 

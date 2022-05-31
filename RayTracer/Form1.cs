@@ -10,6 +10,7 @@
     {
         private Parser parser = new Parser();
         public ObjectContext context = new ObjectContext();
+        private RaysService raysService = new RaysService();
 
         public Form1()
         {
@@ -45,5 +46,24 @@
                 }
             }
         }
+
+        private void startBtn_Click(object sender, EventArgs e)
+        {
+            this.PrimaryCalculations();
+        }
+
+        private void PrimaryCalculations()
+        {
+            var cameraScene = this.context.CameraScene;
+            var imageScene = this.context.ImageScene;
+
+            var fieldOfVision = cameraScene.VisionField * Math.PI / 180;
+            var projectionHeight = 2.0 * cameraScene.Distance * Math.Tan(fieldOfVision / 2.0);
+            var projectionWidth = projectionHeight * imageScene.Horizontal / imageScene.Vertical;
+            var pixelDimension = projectionHeight / imageScene.Vertical; // size of the pixel (the sides are equal since they are a square)
+
+            this.raysService.CalculatePrimaryRays(cameraScene, imageScene, projectionHeight, projectionWidth, pixelDimension);
+        }
+
     }
 }
