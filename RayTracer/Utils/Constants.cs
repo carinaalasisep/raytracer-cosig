@@ -1,4 +1,4 @@
-﻿namespace RayTracer.Constants
+﻿namespace RayTracer.Utils
 {
     public static class Constants
     {

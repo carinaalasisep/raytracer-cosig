@@ -43,6 +43,9 @@
 
         public override bool Intersect(Ray ray, Hit hit)
         {
+            // Taken from
+            // https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-rendering-a-triangle/barycentric-coordinates
+
             // compute plane's normal
             var p0p1Distance = this.P1 - this.P0;
             var p0p2Distance = this.P2 - this.P0;
@@ -55,7 +58,7 @@
             // check if ray and plane are parallel ?
             var NdotRayDirection = Vector3.Dot(crossedVector, ray.Direction);
 
-            if (Math.Abs(NdotRayDirection) < Constants.Constants.Epsilon) //almost 0 
+            if (Math.Abs(NdotRayDirection) < Utils.Constants.Epsilon) //almost 0 
             {
                 return false; //they are parallel so they don't intersect ! 
             }  
@@ -85,7 +88,7 @@
 
             var perpendicularVector = Vector3.Cross(edge0, vp0); //vector perpendicular to triangle's plane 
 
-            if (Vector3.Dot(crossedVector, perpendicularVector) < Constants.Constants.Epsilon)
+            if (Vector3.Dot(crossedVector, perpendicularVector) < Utils.Constants.Epsilon)
             {
                 return false; //The intersection point is on the right side 
             }
@@ -95,7 +98,7 @@
             var vp1 = intersectionPoint - this.P1;
             perpendicularVector = Vector3.Cross(edge1, vp1);
             var u = perpendicularVector.Length() / area2;
-            if (Vector3.Dot(crossedVector, perpendicularVector) < Constants.Constants.Epsilon)
+            if (Vector3.Dot(crossedVector, perpendicularVector) < Utils.Constants.Epsilon)
             {
                 return false;  //The intersection point is on the right side 
             }  
@@ -105,10 +108,12 @@
             var vp2 = intersectionPoint - this.P2;
             perpendicularVector = Vector3.Cross(edge2, vp2);
             var v = perpendicularVector.Length() / area2;
-            if (Vector3.Dot(crossedVector, perpendicularVector) < Constants.Constants.Epsilon)
+            if (Vector3.Dot(crossedVector, perpendicularVector) < Utils.Constants.Epsilon)
             {
                 return false; //The intersection point is on the right side
             }
+
+            hit.Point = intersectionPoint;
 
             return true;  //this ray hits the triangle 
         }
