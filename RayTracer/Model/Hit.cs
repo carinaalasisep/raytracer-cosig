@@ -6,7 +6,7 @@
     {
         public bool Found { get; set; }
 
-        public Material Material { get; set; }
+        public int Material { get; set; }
 
         public Vector3 IntersectionPoint { get; set; }
 
