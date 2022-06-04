@@ -8,9 +8,9 @@
 
         public Material Material { get; set; }
 
-        public Vector3 Point { get; set; }
+        public Vector3 IntersectionPoint { get; set; }
 
-        public Vector3 Normal { get; set; }
+        public Vector3 IntersectionNormal { get; set; }
 
         public double Distance { get; set; } //t
 

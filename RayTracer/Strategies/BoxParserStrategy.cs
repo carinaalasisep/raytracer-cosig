@@ -20,11 +20,7 @@
 
         private Box BuildBox(string[] entity)
         {
-            return new Box
-            {
-                Transformation = int.Parse(entity[2]),
-                Material = int.Parse(entity[3])
-            };
+            return new Box(transformation: int.Parse(entity[2]), material: int.Parse(entity[3]));
         }
     }
 }

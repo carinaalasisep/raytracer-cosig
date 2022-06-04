@@ -5,7 +5,7 @@
 
     public class Sphere : Object3D
     {
-        private const float Radius = 1;
+        private const float PrimitiveRadius = 1;
 
         public override bool Intersect(Ray ray, Hit hit)
         {
@@ -16,15 +16,13 @@
             var distanceFromRayToOrigin = Vector3.Zero - ray.Origin; 
             var tca = Vector3.Dot(distanceFromRayToOrigin, ray.Direction); 
 
-            // if (tca < 0) return false;
-
             var d2 = Vector3.Dot(distanceFromRayToOrigin, distanceFromRayToOrigin) - tca * tca;
 
-            if (d2 > Radius) 
+            if (d2 > PrimitiveRadius) 
             {
                 return false; 
             } 
-            var thc = (float)Math.Sqrt(Radius - d2);
+            var thc = (float)Math.Sqrt(PrimitiveRadius - d2);
 
             //solutions for t if the ray intersects 
             var t0 = tca - thc; 
@@ -52,7 +50,7 @@
                 ray.Origin.Y + ray.Direction.Y * t,
                 ray.Origin.Z + ray.Direction.Z * t);
 
-            hit.Point = intersectionPoint;
+            hit.IntersectionPoint = intersectionPoint;
 
             return true;
         }

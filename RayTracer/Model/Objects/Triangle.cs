@@ -113,7 +113,7 @@
                 return false; //The intersection point is on the right side
             }
 
-            hit.Point = intersectionPoint;
+            hit.IntersectionPoint = intersectionPoint;
 
             return true;  //this ray hits the triangle 
         }
