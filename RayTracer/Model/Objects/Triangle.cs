@@ -15,7 +15,7 @@
 
         public Triangle(int transformation, int material, Vector3 v0, Vector3 v1, Vector3 v2)
         {
-            this.Transformation = transformation;
+            this.TransformationIndex = transformation;
             this.Material = material;
             this.P0 = v0;
             this.P1 = v1;
@@ -56,9 +56,9 @@
 
             // Step 1: finding the intersection point
             // check if ray and plane are parallel ?
-            var NdotRayDirection = Vector3.Dot(crossedVector, ray.Direction);
+            var dotRayDirection = Vector3.Dot(crossedVector, ray.Direction);
 
-            if (Math.Abs(NdotRayDirection) < Utils.Constants.Epsilon) //almost 0 
+            if (Math.Abs(dotRayDirection) < Utils.Constants.Epsilon) //almost 0 
             {
                 return false; //they are parallel so they don't intersect ! 
             }  
@@ -67,7 +67,7 @@
             var d = Vector3.Dot(crossedVector, this.P0);
 
             // compute t (equation 3)
-            var TDistance = (Vector3.Dot(crossedVector, ray.Origin) + d) / NdotRayDirection;
+            var TDistance = (Vector3.Dot(crossedVector, ray.Origin) + d) / dotRayDirection;
 
             // check if the triangle is in behind the ray
             if (TDistance < 0)
@@ -114,6 +114,17 @@
             }
 
             hit.IntersectionPoint = intersectionPoint;
+
+            this.ObjCoordToWorldCoord(ray, hit, intersectionPoint);
+
+            if (hit.Distance > Utils.Constants.Epsilon && hit.Distance < hit.MinDistance)
+            {
+                hit.MinDistance = hit.Distance;
+                hit.Found = true;
+                hit.Material = this.Material;
+
+                hit.IntersectionNormal = this.ConvertNormalToWorld(crossedVector);
+            }
 
             return true;  //this ray hits the triangle 
         }

@@ -10,7 +10,7 @@
 
         public Box(int transformation, int material)
         {
-            this.Transformation = transformation;
+            this.TransformationIndex = transformation;
             this.Material = material;
             this.minVector = new Vector3(-0.5f, -0.5f, -0.5f);
             this.maxVector = new Vector3(0.5f, 0.5f, 0.5f);
@@ -50,7 +50,6 @@
                     hit.IntersectionPoint = new Vector3(rayOrigin.X + rayDirection.X * (float)tnear,
                             rayOrigin.Y + rayDirection.Y * (float)tnear,
                             rayOrigin.Z + rayDirection.Z * (float)tnear);
-                    //TODO fazer a normal 
                     hit.IntersectionNormal = Vector3.Normalize(this.Normal(hit.IntersectionNormal));
                 }
                 else

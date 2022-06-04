@@ -2,11 +2,12 @@
 {
     using System.Drawing;
     using System.Numerics;
+    using System.Windows.Forms;
     using RayTracer.Model;
 
     public class RaysService
     {
-        public void CalculatePrimaryRays(Camera cameraScene, RayTracer.Model.Image imageScene, double projectionHeight, double projectionWidth, double pixelDimension)
+        public void CalculatePrimaryRays(Camera cameraScene, RayTracer.Model.Image imageScene, double projectionHeight, double projectionWidth, double pixelDimension, PictureBox pictureBox)
         {
             var origin = new Vector3
             {
@@ -54,7 +55,7 @@
                     };
                     // uma vez construído o raio, deverão invocar a função traceRay(), a qual irá            acompanhar recursivamente o percurso do referido raio; quando regressar, esta
                     //função deverá retornar uma cor color
-                    Color3 color = this.TraceRay(ray, recursiveLevel); // em que ray designa o raio a ser acompanhado e rec um  inteiro que contém o nível máximo de recursividade
+                    var color = this.TraceRay(ray, recursiveLevel); // em que ray designa o raio a ser acompanhado e rec um  inteiro que contém o nível máximo de recursividade
                                                                        // limitem as componentes primárias (R, G e B) da cor color. Se alguma delas for < 0.0,            façam - na = 0.0(isto nunca deverá acontecer); se alguma delas for > 1.0, façam - na =             1.0(isto poderá e irá acontecer, pois alguns dos materiais definidos no ficheiro             descritivo da cena 3D reflectem(e / ou refractam) mais luz do que a luz que sobre eles              incide
                     color.checkRange();
 
@@ -66,8 +67,11 @@
                     pixel[verticalPos, horizontalPos].Red = (int)255.0 * color.Red;
                     pixel[verticalPos, horizontalPos].Green = (int)255.0 * color.Green;
                     pixel[verticalPos, horizontalPos].Blue = (int)255.0 * color.Blue;
+                    bitmap.SetPixel(verticalPos, horizontalPos, Color.FromArgb((int)pixel[verticalPos, horizontalPos].Red, (int)pixel[verticalPos, horizontalPos].Green, (int)pixel[verticalPos, horizontalPos].Blue));
                 }
             }
+
+            pictureBox.Image = bitmap;
         }
 
         private Color3 TraceRay(Ray ray, int recursiveLevel)

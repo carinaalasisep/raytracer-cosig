@@ -10,9 +10,7 @@
         public double TranslationZ { get; set; }
 
         public double RxAngle { get; set; }
-
         public double RyAngle { get; set; }
-
         public double RzAngle { get; set; }
 
         public double ScaleX { get; set; }
@@ -20,6 +18,16 @@
         public double ScaleZ { get; set; }
 
         public Matrix4x4 Matrix { get; set; }
+
+        public Transformation()
+        {
+            this.Matrix = Matrix4x4.Identity;
+        }
+
+        public Transformation(Matrix4x4 matrix)
+        {
+            this.Matrix = matrix;
+        }
 
         public void Translate(Vector3 position)
         {

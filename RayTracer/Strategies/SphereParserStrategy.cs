@@ -22,7 +22,7 @@
         {
             return new Sphere
             {
-                Transformation = int.Parse(entity[2]),
+                TransformationIndex = int.Parse(entity[2]),
                 Material = int.Parse(entity[3])
             };
         }

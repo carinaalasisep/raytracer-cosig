@@ -44,9 +44,11 @@
             this.specularReflection = new System.Windows.Forms.CheckBox();
             this.refraction = new System.Windows.Forms.CheckBox();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.recursion)).BeginInit();
             this.panel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // loadBtn
@@ -186,11 +188,20 @@
             this.panel3.Size = new System.Drawing.Size(250, 178);
             this.panel3.TabIndex = 11;
             // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Location = new System.Drawing.Point(85, 12);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(852, 364);
+            this.pictureBox1.TabIndex = 12;
+            this.pictureBox1.TabStop = false;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1019, 719);
+            this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.refraction);
             this.Controls.Add(this.specularReflection);
             this.Controls.Add(this.difuseReflection);
@@ -207,6 +218,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.recursion)).EndInit();
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -229,6 +241,7 @@
         private System.Windows.Forms.CheckBox specularReflection;
         private System.Windows.Forms.CheckBox refraction;
         private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.PictureBox pictureBox1;
     }
 }
 

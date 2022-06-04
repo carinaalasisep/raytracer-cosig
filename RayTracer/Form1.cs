@@ -62,7 +62,7 @@
             var projectionWidth = projectionHeight * imageScene.Horizontal / imageScene.Vertical;
             var pixelDimension = projectionHeight / imageScene.Vertical; // size of the pixel (the sides are equal since they are a square)
 
-            this.raysService.CalculatePrimaryRays(cameraScene, imageScene, projectionHeight, projectionWidth, pixelDimension);
+            this.raysService.CalculatePrimaryRays(cameraScene, imageScene, projectionHeight, projectionWidth, pixelDimension, this.pictureBox1);
         }
 
     }

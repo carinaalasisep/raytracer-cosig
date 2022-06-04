@@ -21,7 +21,7 @@
             return entityName == EntityType;
         }
 
-        //TODO: fazer efactor disto
+        //TODO: fazer refactor disto
         private Transformation BuildTransformation(string[] entity)
         {
             var result = new Transformation();
