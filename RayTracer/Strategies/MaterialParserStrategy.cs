@@ -28,7 +28,8 @@
                 materialData.AddRange(entity[line].Split(' '));
             }
 
-            return new Material(red: double.Parse(materialData[0]),
+            return new Material(
+                red: double.Parse(materialData[0]),
                 green: double.Parse(materialData[1]),
                 blue: double.Parse(materialData[2]),
                 coefficients: new double[] 

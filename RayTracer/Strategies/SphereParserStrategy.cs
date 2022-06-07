@@ -11,6 +11,7 @@
             var sphere = this.BuildSphere(entity);
 
             context.SpheresScene.Add(sphere);
+            context.Objects.Add(sphere);
         }
 
         public bool CanHandle(string entityName)

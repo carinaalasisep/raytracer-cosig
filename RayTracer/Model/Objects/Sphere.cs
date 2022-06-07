@@ -49,7 +49,7 @@
                 ray.Origin.X + ray.Direction.X * t,
                 ray.Origin.Y + ray.Direction.Y * t,
                 ray.Origin.Z + ray.Direction.Z * t);
-                        
+
             this.ObjCoordToWorldCoord(ray, hit, intersectionPoint);
 
             var normalIntersectionPoint = Vector3.Normalize(intersectionPoint);

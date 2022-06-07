@@ -8,7 +8,7 @@
 
         public double Blue { get; set; } = 0;
 
-        public void checkRange()
+        public void CheckRange()
         {
             if (this.Red < 0.0)
             {

@@ -28,7 +28,7 @@
 
             float[] otherNormal = { normal.X, normal.Y, normal.Z, 0.0f };
 
-            float[] aux = this.Multiply(otherNormal, transposeMatrix);
+            float[] aux = Utils.Helper.Multiply(otherNormal, transposeMatrix);
 
             return Vector3.Normalize(new Vector3(aux[0], aux[1], aux[2]));
         }
@@ -37,7 +37,7 @@
         {
             float[] hitPoint = { hit.IntersectionPoint.X, hit.IntersectionPoint.Y, hit.IntersectionPoint.Z, 1.0f };
 
-            float[] aux = this.Multiply(hitPoint, this.Transformation.Matrix);
+            float[] aux = Utils.Helper.Multiply(hitPoint, this.Transformation.Matrix);
 
             hit.IntersectionPoint = new Vector3(aux[0] / aux[3], aux[1] / aux[3], aux[2] / aux[3]);
 
@@ -48,25 +48,23 @@
         {
             float[] vec = { vector.X, vector.Y, vector.Z, 1.0f };
 
-            float[] aux = this.Multiply(vec, this.Transformation.Matrix);
+            float[] aux = Utils.Helper.Multiply(vec, this.Transformation.Matrix);
 
             return new Vector3(aux[0], aux[1], aux[2]);
         }
 
-        public float[] Multiply(float[] pointA, Matrix4x4 transformMatrix) // multiplica uma matriz 4 x 4 por uma matriz-coluna representativa de um ponto ou vector expresso em coordenadas homogéneas
+        public void WorldCoordToObjCoord(Ray ray)
         {
-            float[] pointB = new float[4];
+            float[] dir = { ray.Direction.X, ray.Direction.Y, ray.Direction.Z, 0.0f };
+            float[] orig = { ray.Origin.X, ray.Origin.Y, ray.Origin.Z, 1.0f };
+            Matrix4x4 invertMatrix;
+            Matrix4x4.Invert(this.Transformation.Matrix, out invertMatrix);
 
-            pointB[0] = transformMatrix.M11 * pointA[0] + transformMatrix.M12 * pointA[1]
-                + transformMatrix.M13 * pointA[2] + transformMatrix.M14 * pointA[3];
-            pointB[1] = transformMatrix.M21 * pointA[0] + transformMatrix.M22 * pointA[1]
-                + transformMatrix.M23 * pointA[2] + transformMatrix.M24 * pointA[3];
-            pointB[2] = transformMatrix.M31 * pointA[0] + transformMatrix.M32 * pointA[1]
-                + transformMatrix.M33 * pointA[2] + transformMatrix.M34 * pointA[3];
-            pointB[3] = transformMatrix.M41 * pointA[0] + transformMatrix.M42 * pointA[1]
-                + transformMatrix.M43 * pointA[2] + transformMatrix.M44 * pointA[3];
+            float[] aux = Utils.Helper.Multiply(dir, invertMatrix);
+            float[] aux2 = Utils.Helper.Multiply(orig, invertMatrix);
 
-            return pointB;
+            ray.Direction = Vector3.Normalize(new Vector3(aux[0], aux[1], aux[2]));
+            ray.Origin = new Vector3(aux2[0], aux2[1], aux2[2]);
         }
     }
 }

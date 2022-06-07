@@ -1,6 +1,7 @@
 ﻿namespace RayTracer.Strategies
 {
     using System.Collections.Generic;
+    using System.Linq;
     using System.Numerics;
     using RayTracer.Model.Objects;
 
@@ -13,6 +14,7 @@
             var triangles = this.BuildTriangles(entity);
 
             context.TrianglesScene.Add(triangles);
+            context.Objects.AddRange(triangles.TriangleList.Select(t => t));
         }
 
         public bool CanHandle(string entityName)

@@ -11,6 +11,7 @@
             var box = this.BuildBox(entity);
 
             context.BoxesScene.Add(box);
+            context.Objects.Add(box);
         }
 
         public bool CanHandle(string entityName)

@@ -66,6 +66,8 @@
             {
                 hit.IntersectionNormal = Vector3.Negate(hit.IntersectionNormal);
                 hit.Found = true;
+                hit.MinDistance = hit.Distance;
+                hit.Material = this.Material;
             }
 
             return true;
