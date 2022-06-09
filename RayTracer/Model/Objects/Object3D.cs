@@ -13,7 +13,7 @@
 
         public abstract bool Intersect(Ray ray, Hit hit);
 
-        public Transformation transform(int cameraTransform, int objTransform, List<Transformation> transformations)
+        public Transformation Transform(int cameraTransform, int objTransform, List<Transformation> transformations)
         {
             return new Transformation(Matrix4x4.Multiply(transformations.ToArray()[cameraTransform].Matrix, transformations.ToArray()[objTransform].Matrix));
         }
@@ -53,12 +53,12 @@
             return new Vector3(aux[0], aux[1], aux[2]);
         }
 
-        public void WorldCoordToObjCoord(Ray ray)
+        public void WorldCoordToObjCoord(Ray ray, Transformation transformation)
         {
             float[] dir = { ray.Direction.X, ray.Direction.Y, ray.Direction.Z, 0.0f };
             float[] orig = { ray.Origin.X, ray.Origin.Y, ray.Origin.Z, 1.0f };
             Matrix4x4 invertMatrix;
-            Matrix4x4.Invert(this.Transformation.Matrix, out invertMatrix);
+            Matrix4x4.Invert(transformation.Matrix, out invertMatrix);
 
             float[] aux = Utils.Helper.Multiply(dir, invertMatrix);
             float[] aux2 = Utils.Helper.Multiply(orig, invertMatrix);

@@ -14,6 +14,6 @@
 
         public double Distance { get; set; } //t
 
-        public double MinDistance { get; set; } //tmin
+        public double MinDistance { get; set; } = double.MaxValue; //tmin
     }
 }

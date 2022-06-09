@@ -40,8 +40,8 @@
                     pixel[verticalPos, horizontalPos] = new Color3();
 
                     // calculem as coordenadas P.x, P.y e P.z do centro do píxel[i][j]
-                    var px = (float)((horizontalPos + 0.5) * pixelDimension - projectionWidth / 2.0); // a origem do sistema de eixos coordenados estálocalizada no centro do plano de projecção, mas o píxel[0][0] está localizado no cantosuperior esquerdo da imagem; daí a subtracção de width / 2.0 à coordenada x do píxel
-                    var py = (float)(-(verticalPos + 0.5) * pixelDimension + projectionHeight / 2.0); // a origem do sistema de eixos coordenados está            localizada no centro do plano de projecção, mas o píxel[0][0] está localizado no cantosuperior esquerdo da imagem; daí a adição de height / 2.0 à coordenada y do píxel
+                    var px = (float)((verticalPos + 0.5) * pixelDimension - projectionWidth / 2.0); // a origem do sistema de eixos coordenados estálocalizada no centro do plano de projecção, mas o píxel[0][0] está localizado no cantosuperior esquerdo da imagem; daí a subtracção de width / 2.0 à coordenada x do píxel
+                    var py = (float)(-(horizontalPos + 0.5) * pixelDimension + projectionHeight / 2.0); // a origem do sistema de eixos coordenados está            localizada no centro do plano de projecção, mas o píxel[0][0] está localizado no cantosuperior esquerdo da imagem; daí a adição de height / 2.0 à coordenada y do píxel
                     var pz = 0.0f; // o plano de projecção é o plano z = 0.0;sabendo que o raio que passa pelo centro do píxel[i][j] (o ponto (P.x, P.y, P.z)) tem            origem na posição da câmara(o ponto(0.0, 0.0, distance)), calculem o vector directionque define a direcção do referido raiodirection = new Vector3(P.x - 0.0, P.y - 0.0, P.z - distance); // ou seja, direction = new
                     var direction = new Vector3
                     {
@@ -91,66 +91,69 @@
             foreach (var obj in context.Objects)
             {
                 var transformatedRay = new Ray { Origin = ray.Origin, Direction = ray.Direction };
-                obj.WorldCoordToObjCoord(transformatedRay);
+                obj.WorldCoordToObjCoord(transformatedRay, obj.Transformation);
                 obj.Intersect(transformatedRay, hit);
             }
 
-            var color = new Color3();
+            var color = new Color3 { Red = context.ImageScene.Color3.Red, Green = context.ImageScene.Color3.Green, Blue = context.ImageScene.Color3.Blue };
 
-            foreach (var light in context.LightsScene)
+            if (hit.Found)
             {
-                var lightColor = light.Color;
-                var materialScene = context.MaterialsScene;
-                var materialHit = materialScene[hit.Material];
-                var materialHitColor = materialScene[hit.Material].Color;
-
-                color = new Color3
+                foreach (var light in context.LightsScene)
                 {
-                    Red = color.Red + (lightColor.Red * materialHitColor.Red) * materialHit.Environment,
-                    Green = color.Green + (lightColor.Green * materialHitColor.Green) * materialHit.Environment,
-                    Blue = color.Blue + (lightColor.Blue * materialHitColor.Blue) * materialHit.Environment
-                };
+                    var lightColor = light.Color;
+                    var materialScene = context.MaterialsScene;
+                    var materialHit = materialScene[hit.Material];
+                    var materialHitColor = materialScene[hit.Material].Color;
 
-                Vector3 l = Vector3.Subtract(this.applyTransformation(new Vector3(0, 0, 0), light.Transformation), hit.IntersectionPoint);
-
-                float tLight = l.Length();
-
-                l = Vector3.Normalize(l);
-
-                float cosTheta = Vector3.Dot(hit.IntersectionNormal, l);
-
-                if (cosTheta > Utils.Constants.Epsilon)
-                {
-
-                    var shadowRay = new Ray { Origin = hit.IntersectionPoint + (float)Utils.Constants.Epsilon * hit.IntersectionNormal, Direction = l };
-                    var shadowHit = new Hit();
-                    shadowHit.MinDistance = tLight;
-
-                    foreach (var object3d in context.Objects)
+                    color = new Color3
                     {
-                        shadowHit.Found = false;
-                        Ray shadowRayTransformed = new Ray { Origin = shadowRay.Origin, Direction = shadowRay.Direction };
-                        object3d.WorldCoordToObjCoord(shadowRayTransformed);
-                        object3d.Intersect(shadowRayTransformed, shadowHit);
+                        Red = color.Red + (lightColor.Red * materialHitColor.Red) * materialHit.Environment,
+                        Green = color.Green + (lightColor.Green * materialHitColor.Green) * materialHit.Environment,
+                        Blue = color.Blue + (lightColor.Blue * materialHitColor.Blue) * materialHit.Environment
+                    };
 
-                        if (shadowHit.Found)
+                    Vector3 l = Vector3.Subtract(this.applyTransformation(new Vector3(0, 0, 0), light.Transformation), hit.IntersectionPoint);
+
+                    float tLight = l.Length();
+
+                    l = Vector3.Normalize(l);
+
+                    float cosTheta = Vector3.Dot(hit.IntersectionNormal, l);
+
+                    if (cosTheta > Utils.Constants.Epsilon)
+                    {
+
+                        var shadowRay = new Ray { Origin = hit.IntersectionPoint + (float)Utils.Constants.Epsilon * hit.IntersectionNormal, Direction = l };
+                        var shadowHit = new Hit();
+                        shadowHit.MinDistance = tLight;
+
+                        foreach (var object3d in context.Objects)
                         {
-                            break;
+                            shadowHit.Found = false;
+                            Ray shadowRayTransformed = new Ray { Origin = shadowRay.Origin, Direction = shadowRay.Direction };
+                            object3d.WorldCoordToObjCoord(shadowRayTransformed, object3d.Transformation);
+                            object3d.Intersect(shadowRayTransformed, shadowHit);
+
+                            if (shadowHit.Found)
+                            {
+                                break;
+                            }
                         }
-                    }
 
-                    if (!shadowHit.Found)
-                    {
-                        color = new Color3
+                        if (!shadowHit.Found)
                         {
-                            Red = color.Red + (lightColor.Red * materialHitColor.Red) * materialHit.Environment * cosTheta,
-                            Green = color.Green + (lightColor.Green * materialHitColor.Green) * materialHit.Environment * cosTheta,
-                            Blue = color.Blue + (lightColor.Blue * materialHitColor.Blue) * materialHit.Environment * cosTheta
-                        }; 
+                            color = new Color3
+                            {
+                                Red = color.Red + (lightColor.Red * materialHitColor.Red) * materialHit.Environment * cosTheta,
+                                Green = color.Green + (lightColor.Green * materialHitColor.Green) * materialHit.Environment * cosTheta,
+                                Blue = color.Blue + (lightColor.Blue * materialHitColor.Blue) * materialHit.Environment * cosTheta
+                            };
+                        }
                     }
                 }
             }
-
+            
             return color;
         }
         Vector3 applyTransformation(Vector3 point, Transformation transformation)

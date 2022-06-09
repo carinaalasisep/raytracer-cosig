@@ -41,12 +41,12 @@
 
             foreach (var sphere in context.SpheresScene)
             {
-                sphere.Transformation = sphere.transform(context.CameraScene.Transformation, sphere.TransformationIndex, context.TransformationsScene);
+                sphere.Transformation = sphere.Transform(context.CameraScene.Transformation, sphere.TransformationIndex, context.TransformationsScene);
             }
 
             foreach (var box in context.BoxesScene)
             {
-                box.Transformation = box.transform(context.CameraScene.Transformation, box.TransformationIndex, context.TransformationsScene);
+                box.Transformation = box.Transform(context.CameraScene.Transformation, box.TransformationIndex, context.TransformationsScene);
             }
 
             foreach (var triangleMesh in context.TrianglesScene)
@@ -54,7 +54,7 @@
                 // TODO: preciso de normalizar outra vez?...
                 foreach (var triangle in triangleMesh.TriangleList)
                 {
-                    triangle.Transformation = triangle.transform(context.CameraScene.Transformation, triangleMesh.TriangleList.First().TransformationIndex, context.TransformationsScene);
+                    triangle.Transformation = triangle.Transform(context.CameraScene.Transformation, triangleMesh.TriangleList.First().TransformationIndex, context.TransformationsScene);
                 }
             }
         }

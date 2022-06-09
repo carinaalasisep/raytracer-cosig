@@ -50,13 +50,14 @@
                 ray.Origin.Y + ray.Direction.Y * t,
                 ray.Origin.Z + ray.Direction.Z * t);
 
+            hit.IntersectionPoint = intersectionPoint;
+
             this.ObjCoordToWorldCoord(ray, hit, intersectionPoint);
 
             var normalIntersectionPoint = Vector3.Normalize(intersectionPoint);
 
             if (hit.Distance > Utils.Constants.Epsilon && hit.Distance < hit.MinDistance)
             {
-                hit.IntersectionPoint = intersectionPoint;
                 hit.MinDistance = hit.Distance;
                 hit.Found = true;
                 hit.Material = this.Material;

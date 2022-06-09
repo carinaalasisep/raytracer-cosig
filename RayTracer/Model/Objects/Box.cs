@@ -7,6 +7,8 @@
     {
         private Vector3 minVector;
         private Vector3 maxVector;
+        private float tnear = 0.0f;
+        private float tfar = 0.0f;
 
         public Box(int transformation, int material)
         {
@@ -18,88 +20,162 @@
 
         public override bool Intersect(Ray ray, Hit hit)
         {
-            var rayOrigin = ray.Origin;
-            var rayDirection = ray.Direction;
-
-            double[] origin = { rayOrigin.X, rayOrigin.Y, rayOrigin.Z };
-            double[] min = { this.minVector.X, this.minVector.Y, this.minVector.Z };
-            double[] max = { this.maxVector.X, this.maxVector.Y, this.maxVector.Z };
-            double[] direction = { 1 / rayDirection.X, 1 / rayDirection.Y, 1 / rayDirection.Z };
-
-            var t1 = (min[0] - origin[0]) * direction[0];
-            var t2 = (max[0] - origin[0]) * direction[0];
-
-            var tnear = Math.Min(t1, t2);
-            var tfar = Math.Max(t1, t2);
-
-            for (int i = 1; i < 3; ++i)
+            int axis = -1;
+            if (this.IntersectXAxis(ray, ref axis) && this.IntersectYAxis(ray, ref axis) && this.IntersectZAxis(ray, ref axis))
             {
-                t1 = (min[i] - origin[i]) * direction[i];
-                t2 = (max[i] - origin[i]) * direction[i];
+                var resultIntersect = new Vector3(ray.Origin.X + ray.Direction.X * this.tnear,
+                    ray.Origin.Y + ray.Direction.Y * this.tnear,
+                    ray.Origin.Z + ray.Direction.Z * this.tnear);
 
-                tnear = Math.Max(tnear, Math.Min(Math.Min(t1, t2), tfar));
-                tfar = Math.Min(tfar, Math.Max(Math.Max(t1, t2), tnear));
+                hit.IntersectionPoint = resultIntersect;
+                this.ObjCoordToWorldCoord(ray, hit, resultIntersect);
+
+                if (hit.Distance > Utils.Constants.Epsilon && hit.Distance < hit.MinDistance)
+                {
+                    hit.Found = true;
+
+                    hit.MinDistance = hit.Distance;
+
+                    hit.Material = this.Material;
+
+                    switch (axis)
+                    {
+                        case 0:
+                            hit.IntersectionNormal = this.ConvertNormalToWorld(new Vector3(Math.Sign(resultIntersect.X), 0, 0));
+                            break;
+                        case 1:
+                            hit.IntersectionNormal = this.ConvertNormalToWorld(new Vector3(0, Math.Sign(resultIntersect.Y), 0));
+                            break;
+                        case 2:
+                            hit.IntersectionNormal = this.ConvertNormalToWorld(new Vector3(0, 0, Math.Sign(resultIntersect.Z)));
+                            break;
+                    }
+                }
+
+                return true;
             }
 
-            //TODO rever isto tudo e ver se funciona...
+            return false;
+        }
 
-            if (tfar > Math.Max(tnear, 0.0))
+        //TODO: rever e tentar evitar codigo repetido
+        private bool IntersectXAxis(Ray ray, ref int axis)
+        {
+            //If parallel
+            if (ray.Direction.X == 0)
             {
-                if (tnear > 0)
-                {
-                    hit.IntersectionPoint = new Vector3(rayOrigin.X + rayDirection.X * (float)tnear,
-                            rayOrigin.Y + rayDirection.Y * (float)tnear,
-                            rayOrigin.Z + rayDirection.Z * (float)tnear);
-                    hit.IntersectionNormal = Vector3.Normalize(this.Normal(hit.IntersectionNormal));
-                }
-                else
+
+                if (ray.Origin.X < -0.5 || ray.Origin.X > 0.5)
                 {
                     return false;
                 }
+
+                this.tnear = float.MinValue;
+                this.tfar = float.MaxValue;
+
             }
             else
             {
-                return false;
+                this.tnear = (float)((-0.5 - ray.Origin.X) / ray.Direction.X);
+                this.tfar = (float)((0.5 - ray.Origin.X) / ray.Direction.X);
+
+                if (this.tnear > this.tfar)
+                {
+                    Utils.Helper.Swap(ref this.tnear, ref this.tfar);
+                }
+
+                if (this.tfar < Utils.Constants.Epsilon) //Se aparecer acne trocar 0 para kEpsilon
+                {
+                    return false;
+                }
+
             }
 
-            if (Vector3.Dot(hit.IntersectionNormal, rayDirection) > 0)
+            axis = 0;
+
+            return true;
+        }
+
+        private bool IntersectYAxis(Ray ray, ref int axis)
+        {
+            //If parallel
+            if (ray.Direction.Y == 0)
             {
-                hit.IntersectionNormal = Vector3.Negate(hit.IntersectionNormal);
-                hit.Found = true;
-                hit.MinDistance = hit.Distance;
-                hit.Material = this.Material;
+                if (ray.Origin.Y < -0.5 || ray.Origin.Y > 0.5)
+                {
+                    return false;
+                }
+
+            }
+            else
+            {
+                var t1 = (float)(-0.5 - ray.Origin.Y) / ray.Direction.Y;
+                var t2 = (float)(0.5 - ray.Origin.Y) / ray.Direction.Y;
+
+                if (t1 > t2)
+                {
+                    Utils.Helper.Swap(ref t1, ref t2);
+                }
+
+                if (t1 > this.tnear)
+                {
+                    axis = 1;
+                    this.tnear = t1;
+                }
+
+                if (t2 < this.tfar)
+                {
+                    this.tfar = t2;
+                }
+
+                if (this.tnear > this.tfar || this.tfar < Utils.Constants.Epsilon) //Se aparecer acne trocar 0 para kEpsilon
+                {
+                    return false;
+                }
             }
 
             return true;
         }
 
-        private Vector3 Normal(Vector3 point)
+        private bool IntersectZAxis(Ray ray, ref int axis)
         {
-            Vector3 normal = new Vector3(0, 0, 0);
-            double min = double.PositiveInfinity;
-            double distance;
-
-            distance = Math.Abs(this.maxVector.X - Math.Abs(point.X));
-
-            if (distance < min)
+            //If parallel
+            if (ray.Direction.Z == 0)
             {
-                min = distance;
-                normal = new Vector3(1, 0, 0);    // Cardinal axis for X
-            }
-            distance = Math.Abs(this.maxVector.Y - Math.Abs(point.Y));
-            if (distance < min)
-            {
-                min = distance;
-                normal = new Vector3(0, 1, 0);     // Cardinal axis for Y
-            }
-            distance = Math.Abs(this.maxVector.X - Math.Abs(point.Z));
+                if (ray.Origin.Z < -0.5 || ray.Origin.Z > 0.5)
+                {
+                    return false;
+                }
 
-            if (distance < min)
+            }
+            else
             {
-                normal = new Vector3(0, 0, 1);    // Cardinal axis for Z
+                var t1 = (float)(-0.5 - ray.Origin.Z) / ray.Direction.Z;
+                var t2 = (float)(0.5 - ray.Origin.Z) / ray.Direction.Z;
+
+                if (t1 > t2)
+                {
+                    Utils.Helper.Swap(ref t1, ref t2);
+                }
+
+                if (t1 > this.tnear)
+                {
+                    axis = 2;
+                    this.tnear = t1;
+                }
+
+                if (t2 < this.tfar)
+                {
+                    this.tfar = t2;
+                }
+
+                if (this.tnear > this.tfar || this.tfar < Utils.Constants.Epsilon) //Se aparecer acne trocar 0 para kEpsilon
+                {
+                    return false;
+                }
             }
 
-            return normal;
+            return true;
         }
     }
 }
