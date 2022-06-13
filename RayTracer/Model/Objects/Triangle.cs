@@ -52,6 +52,7 @@
 
             // no need to normalize
             var crossedVector = Vector3.Cross(p0p1Distance, p0p2Distance);  //N 
+            crossedVector = Vector3.Normalize(crossedVector);
             var area2 = crossedVector.Length(); // TODO: Check if area2 variable is necessary
 
             // Step 1: finding the intersection point
@@ -64,10 +65,10 @@
             }  
                 
             // compute d parameter using equation 2
-            var d = Vector3.Dot(crossedVector, this.P0);
+            var d = -Vector3.Dot(crossedVector, this.P0);
 
             // compute t (equation 3)
-            var TDistance = (Vector3.Dot(crossedVector, ray.Origin) + d) / dotRayDirection;
+            var TDistance = -(Vector3.Dot(crossedVector, ray.Origin) + d) / dotRayDirection;
 
             // check if the triangle is in behind the ray
             if (TDistance < 0)
@@ -97,8 +98,8 @@
             var edge1 = this.P2 - this.P1;
             var vp1 = intersectionPoint - this.P1;
             perpendicularVector = Vector3.Cross(edge1, vp1);
-            var u = perpendicularVector.Length() / area2;
-            if (Vector3.Dot(crossedVector, perpendicularVector) < Utils.Constants.Epsilon)
+            var u = Vector3.Dot(crossedVector, perpendicularVector);
+            if (u < Utils.Constants.Epsilon)
             {
                 return false;  //The intersection point is on the right side 
             }  
@@ -111,6 +112,11 @@
             if (Vector3.Dot(crossedVector, perpendicularVector) < Utils.Constants.Epsilon)
             {
                 return false; //The intersection point is on the right side
+            }
+
+            if (Vector3.Dot(ray.Direction, hit.IntersectionNormal) < -Utils.Constants.Epsilon)
+            {
+                return false;
             }
 
             hit.IntersectionPoint = intersectionPoint;
