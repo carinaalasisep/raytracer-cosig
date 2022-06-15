@@ -6,7 +6,7 @@
 
         public double Environment { get; set; } // 0.0 <= __ <= 1.0
 
-        public double Difuse { get; set; }  // 0.0 <= __ <= 1.0
+        public double Diffuse { get; set; }  // 0.0 <= __ <= 1.0
 
         public double Specular { get; set; }  // 0.0 <= __ <= 1.0
 
@@ -26,7 +26,7 @@
             };
 
             this.Environment = coefficients[0];
-            this.Difuse = coefficients[1];
+            this.Diffuse = coefficients[1];
             this.Specular = coefficients[2];
             this.Refraction = coefficients[3];
             this.RefractionIdex = coefficients[4];

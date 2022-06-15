@@ -103,17 +103,6 @@
                 var materialHit = materialScene[hit.Material];
                 var materialHitColor = materialScene[hit.Material].Color;
 
-                //OPTIMIZING OPERATION SAVING THE AMBIENT COLOR IN THE MATERIAL OBJECT BY NOT REPETING IN EACH ITERATION
-                //if (materialHit.Environment > 0)
-                //{
-                //    color = new Color3 
-                //    { 
-                //        Red = materialHitColor.Red + materialHit.AmbientColor.Red, 
-                //        Green = materialHitColor.Green + materialHit.AmbientColor.Green,
-                //        Blue = materialHitColor.Blue + materialHit.AmbientColor.Blue
-                //    };
-                //}
-
                 foreach (var light in context.LightsScene)
                 {
                     color = this.GetPixelColor(context, hit, color, light, materialHit, materialHitColor);
@@ -161,13 +150,22 @@
 
             if (cosTheta > Utils.Constants.Epsilon)
             {
-                color = GetShadowsAndDifuseLight(context, hit, color, lightColor, materialHit, materialHitColor, l, tLight, cosTheta);
+                color = GetShadowsAndDiffuseLighting(context, hit, color, lightColor, materialHit, materialHitColor, l, tLight, cosTheta);
             }
 
             return color;
         }
 
-        private static Color3 GetShadowsAndDifuseLight(ObjectContext context, Hit hit, Color3 color, Color3 lightColor, Material materialHit, Color3 materialHitColor, Vector3 l, float tLight, float cosTheta)
+        private static Color3 GetShadowsAndDiffuseLighting(
+            ObjectContext context,
+            Hit hit,
+            Color3 color,
+            Color3 lightColor,
+            Material materialHit,
+            Color3 materialHitColor,
+            Vector3 l,
+            float tLight,
+            float cosTheta)
         {
             var shadowRay = new Ray { Origin = hit.IntersectionPoint + (float)Utils.Constants.Epsilon * hit.IntersectionNormal, Direction = l };
             var shadowHit = new Hit();
@@ -188,11 +186,12 @@
 
             if (!shadowHit.Found)
             {
+                //diffuse light
                 color = new Color3
                 {
-                    Red = color.Red + lightColor.Red *   materialHit.Difuse * cosTheta,
-                    Green = color.Green + lightColor.Green *   materialHit.Difuse * cosTheta,
-                    Blue = color.Blue + lightColor.Blue *   materialHit.Difuse * cosTheta
+                    Red = color.Red + lightColor.Red * materialHitColor.Red *  materialHit.Diffuse * cosTheta,
+                    Green = color.Green + lightColor.Green * materialHitColor.Green *  materialHit.Diffuse * cosTheta,
+                    Blue = color.Blue + lightColor.Blue * materialHitColor.Blue *  materialHit.Diffuse * cosTheta
                 };
             }
 
