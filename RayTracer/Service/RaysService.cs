@@ -95,77 +95,118 @@
                 obj.Intersect(transformatedRay, hit);
             }
 
-            var color = new Color3 { Red = context.ImageScene.Color3.Red, Green = context.ImageScene.Color3.Green, Blue = context.ImageScene.Color3.Blue };
+            var color = new Color3 { Red = 0, Green = 0, Blue = 0 }; // inicialização
 
             if (hit.Found)
             {
+                var materialScene = context.MaterialsScene;
+                var materialHit = materialScene[hit.Material];
+                var materialHitColor = materialScene[hit.Material].Color;
+
+                //OPTIMIZING OPERATION SAVING THE AMBIENT COLOR IN THE MATERIAL OBJECT BY NOT REPETING IN EACH ITERATION
+                //if (materialHit.Environment > 0)
+                //{
+                //    color = new Color3 
+                //    { 
+                //        Red = materialHitColor.Red + materialHit.AmbientColor.Red, 
+                //        Green = materialHitColor.Green + materialHit.AmbientColor.Green,
+                //        Blue = materialHitColor.Blue + materialHit.AmbientColor.Blue
+                //    };
+                //}
+
                 foreach (var light in context.LightsScene)
                 {
-                    var lightColor = light.Color;
-                    var materialScene = context.MaterialsScene;
-                    var materialHit = materialScene[hit.Material];
-                    var materialHitColor = materialScene[hit.Material].Color;
-
-                    color = new Color3
-                    {
-                        Red = color.Red + (lightColor.Red * materialHitColor.Red) * materialHit.Environment,
-                        Green = color.Green + (lightColor.Green * materialHitColor.Green) * materialHit.Environment,
-                        Blue = color.Blue + (lightColor.Blue * materialHitColor.Blue) * materialHit.Environment
-                    };
-
-                    Vector3 l = Vector3.Subtract(this.applyTransformation(new Vector3(0, 0, 0), light.Transformation), hit.IntersectionPoint);
-
-                    float tLight = l.Length();
-
-                    l = Vector3.Normalize(l);
-
-                    float cosTheta = Vector3.Dot(hit.IntersectionNormal, l);
-
-                    if (cosTheta > Utils.Constants.Epsilon)
-                    {
-
-                        var shadowRay = new Ray { Origin = hit.IntersectionPoint + (float)Utils.Constants.Epsilon * hit.IntersectionNormal, Direction = l };
-                        var shadowHit = new Hit();
-                        shadowHit.MinDistance = tLight;
-
-                        foreach (var object3d in context.Objects)
-                        {
-                            shadowHit.Found = false;
-                            Ray shadowRayTransformed = new Ray { Origin = shadowRay.Origin, Direction = shadowRay.Direction };
-                            object3d.WorldCoordToObjCoord(shadowRayTransformed, object3d.Transformation);
-                            object3d.Intersect(shadowRayTransformed, shadowHit);
-
-                            if (shadowHit.Found)
-                            {
-                                break;
-                            }
-                        }
-
-                        if (!shadowHit.Found)
-                        {
-                            color = new Color3
-                            {
-                                Red = color.Red + (lightColor.Red * materialHitColor.Red) * materialHit.Environment * cosTheta,
-                                Green = color.Green + (lightColor.Green * materialHitColor.Green) * materialHit.Environment * cosTheta,
-                                Blue = color.Blue + (lightColor.Blue * materialHitColor.Blue) * materialHit.Environment * cosTheta
-                            };
-                        }
-                    }
+                    color = this.GetPixelColor(context, hit, color, light, materialHit, materialHitColor);
                 }
+
+                return new Color3 { Red = color.Red/context.LightsScene.Count, Green = color.Green/context.LightsScene.Count, Blue = color.Blue/context.LightsScene.Count };
             }
             
+            return new Color3 { Red = context.ImageScene.Color3.Red, Green = context.ImageScene.Color3.Green, Blue = context.ImageScene.Color3.Blue };
+        }
+
+        private Color3 GetPixelColor(ObjectContext context, Hit hit, Color3 color, Light light, Material materialHit, Color3 materialHitColor)
+        {
+            var lightColor = light.Color;
+
+            // cálculo da componente de reflexão ambiente com origem na fonte de luz light
+            color = new Color3
+            {
+                Red = color.Red + lightColor.Red * materialHitColor.Red * materialHit.Environment,
+                Green = color.Green + lightColor.Green * materialHitColor.Green * materialHit.Environment,
+                Blue = color.Blue + lightColor.Blue * materialHitColor.Blue * materialHit.Environment
+            };
+
+            // cálculo da componente de reflexão difusa com origem na fonte de luz light
+            // comecem por construir o vector l que une o ponto de intersecção ao ponto
+            // correspondente à posição da fonte de luz light
+            var l = Vector3.Subtract(this.ApplyTransformation(new Vector3(0, 0, 0), light.Transformation), hit.IntersectionPoint);
+
+            var tLight = l.Length();
+
+            // normalizem o vector l
+
+            l = Vector3.Normalize(l);
+
+            // calculem o co-seno do ângulo de incidência da luz. Este é igual ao produto
+            //escalar do vector normal pelo vector l(assumindo que ambos os vectores são
+            //unitários)
+            var cosTheta = Vector3.Dot(hit.IntersectionNormal, l);
+
+            // calculem a componente de reflexão difusa e adicionem a cor resultante à cor
+            //  color.Tenham, no entanto, em consideração que só interessa calcular esta
+            //componente se o ângulo de incidência θ for inferior a 90.0° (por outras palavras,
+            //se cosTheta > 0.0).Um ângulo de incidência superior àquele valor significa que o
+            //raio luminoso está a incidir no lado de trás da superfície do objecto intersectado
+
+            if (cosTheta > Utils.Constants.Epsilon)
+            {
+                color = GetShadowsAndDifuseLight(context, hit, color, lightColor, materialHit, materialHitColor, l, tLight, cosTheta);
+            }
+
             return color;
         }
-        Vector3 applyTransformation(Vector3 point, Transformation transformation)
+
+        private static Color3 GetShadowsAndDifuseLight(ObjectContext context, Hit hit, Color3 color, Color3 lightColor, Material materialHit, Color3 materialHitColor, Vector3 l, float tLight, float cosTheta)
         {
+            var shadowRay = new Ray { Origin = hit.IntersectionPoint + (float)Utils.Constants.Epsilon * hit.IntersectionNormal, Direction = l };
+            var shadowHit = new Hit();
+            shadowHit.MinDistance = tLight;
 
-            float[] PointA = { point.X, point.Y, point.Z, 1.0f };
-            float[] PointB = Utils.Helper.Multiply(PointA, transformation.Matrix);
+            foreach (var object3d in context.Objects)
+            {
+                shadowHit.Found = false;
+                var shadowRayTransformed = new Ray { Origin = shadowRay.Origin, Direction = shadowRay.Direction };
+                object3d.WorldCoordToObjCoord(shadowRayTransformed, object3d.Transformation);
+                object3d.Intersect(shadowRayTransformed, shadowHit);
 
-            Vector3 newPoint = new Vector3(PointB[0] / PointB[3], PointB[1] / PointB[3], PointB[2] / PointB[3]);
+                if (shadowHit.Found)
+                {
+                    break;
+                }
+            }
+
+            if (!shadowHit.Found)
+            {
+                color = new Color3
+                {
+                    Red = color.Red + lightColor.Red *   materialHit.Difuse * cosTheta,
+                    Green = color.Green + lightColor.Green *   materialHit.Difuse * cosTheta,
+                    Blue = color.Blue + lightColor.Blue *   materialHit.Difuse * cosTheta
+                };
+            }
+
+            return color;
+        }
+
+        Vector3 ApplyTransformation(Vector3 point, Transformation transformation)
+        {
+            float[] pointA = { point.X, point.Y, point.Z, 1.0f };
+            float[] pointB = Utils.Helper.Multiply(pointA, transformation.Matrix);
+
+            var newPoint = new Vector3(pointB[0] / pointB[3], pointB[1] / pointB[3], pointB[2] / pointB[3]);
 
             return newPoint;
-
         }
     }
 }

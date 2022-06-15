@@ -130,9 +130,11 @@
                 hit.Material = this.Material;
 
                 hit.IntersectionNormal = this.ConvertNormalToWorld(crossedVector);
+
+                return true;  //this ray hits the triangle 
             }
 
-            return true;  //this ray hits the triangle 
+            return false;
         }
     }
 }

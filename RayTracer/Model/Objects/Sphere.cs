@@ -62,9 +62,11 @@
                 hit.Found = true;
                 hit.Material = this.Material;
                 hit.IntersectionNormal = this.ConvertNormalToWorld(normalIntersectionPoint);
+
+                return true;
             }
 
-            return true;
+            return false;
         }
     }
 }

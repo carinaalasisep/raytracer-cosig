@@ -14,6 +14,8 @@
 
         public double RefractionIdex { get; set; } // >1.0
 
+        public Color3 AmbientColor { get; set; } 
+
         public Material(double red, double green, double blue, double[] coefficients)
         {
             this.Color = new Color3
@@ -28,6 +30,13 @@
             this.Specular = coefficients[2];
             this.Refraction = coefficients[3];
             this.RefractionIdex = coefficients[4];
+
+            this.AmbientColor = new Color3
+            {
+                Red = this.Color.Red * this.Environment,
+                Blue = this.Color.Blue * this.Environment,
+                Green = this.Color.Green * this.Environment
+            };
         }
 
     }

@@ -2,6 +2,6 @@
 {
     public static class Constants
     {
-        public static double Epsilon { get; set; } = 1e-6;
+        public static double Epsilon { get; set; } = 0.0001;
     }
 }

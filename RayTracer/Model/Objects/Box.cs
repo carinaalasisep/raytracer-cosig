@@ -50,9 +50,9 @@
                             hit.IntersectionNormal = this.ConvertNormalToWorld(new Vector3(0, 0, Math.Sign(resultIntersect.Z)));
                             break;
                     }
-                }
 
-                return true;
+                    return true;
+                }
             }
 
             return false;
