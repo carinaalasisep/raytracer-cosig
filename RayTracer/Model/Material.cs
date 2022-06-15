@@ -12,7 +12,7 @@
 
         public double Refraction { get; set; }  // 0.0 <= __ <= 1.0
 
-        public double RefractionIdex { get; set; } // >1.0
+        public double RefractionIndex { get; set; } // >1.0
 
         public Color3 AmbientColor { get; set; } 
 
@@ -29,7 +29,7 @@
             this.Diffuse = coefficients[1];
             this.Specular = coefficients[2];
             this.Refraction = coefficients[3];
-            this.RefractionIdex = coefficients[4];
+            this.RefractionIndex = coefficients[4];
 
             this.AmbientColor = new Color3
             {
