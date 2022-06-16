@@ -41,7 +41,7 @@
             };
         }
 
-        public override bool Intersect(Ray ray, Hit hit)
+        public override bool Intersect(Ray ray, Hit hit, Vector3 origin)
         {
             // Taken from
             // https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-rendering-a-triangle/barycentric-coordinates
@@ -118,7 +118,7 @@
                 return false;
             }
 
-            this.ObjectCoordToWorldCoord(ray, hit, intersectionPoint);
+            this.ObjectCoordToWorldCoord(ray, hit, intersectionPoint, origin);
 
             if (hit.Distance > Utils.Constants.Epsilon && hit.Distance < hit.MinDistance)
             {

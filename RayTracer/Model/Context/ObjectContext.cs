@@ -25,5 +25,13 @@
         public List<Transformation> TransformationsScene { get; set; } = new List<Transformation>();
 
         public int RecursiveLevel { get; set; } = 0;
+
+        public bool IsEnvironmentEnabled { get; set; }
+
+        public bool IsDiffuseReflectionEnabled { get; set; }
+
+        public bool IsReflectionEnabled { get; set; }
+
+        public bool IsRefractionEnabled { get; set; }
     }
 }

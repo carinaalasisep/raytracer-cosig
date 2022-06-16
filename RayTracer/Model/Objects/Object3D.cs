@@ -11,7 +11,7 @@
 
         public int Material { get; set; }
 
-        public abstract bool Intersect(Ray ray, Hit hit);
+        public abstract bool Intersect(Ray ray, Hit hit, Vector3 origin);
 
         public Transformation Transform(int cameraTransform, int objTransform, List<Transformation> transformations)
         {
@@ -33,11 +33,11 @@
             return Vector3.Normalize(new Vector3(normalWorld[0], normalWorld[1], normalWorld[2]));
         }
 
-        public void ObjectCoordToWorldCoord(Ray ray, Hit hit, Vector3 intersectionPoint)
+        public void ObjectCoordToWorldCoord(Ray ray, Hit hit, Vector3 intersectionPoint, Vector3 origin)
         {
             hit.IntersectionPoint = this.ObjectCoordToWorldCoordVector(intersectionPoint);
 
-            hit.Distance = Vector3.Subtract(hit.IntersectionPoint, ray.Origin).Length();
+            hit.Distance = Vector3.Subtract(ray.Origin, hit.IntersectionPoint).Length();
         }
 
         private Vector3 ObjectCoordToWorldCoordVector(Vector3 vectorObject)

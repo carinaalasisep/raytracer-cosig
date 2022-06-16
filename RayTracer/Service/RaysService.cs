@@ -91,22 +91,19 @@
 
             foreach (var obj in context.Objects)
             {
+                var origin = ray.Origin;
                 var transformatedRay = new Ray { Origin = ray.Origin, Direction = ray.Direction };
                 obj.WorldCoordToObjCoord(transformatedRay, obj.Transformation);
-                obj.Intersect(transformatedRay, hit);
+                obj.Intersect(transformatedRay, hit, origin);
             }
 
             var color = new Color3 { Red = 0, Green = 0, Blue = 0 }; // inicialização
 
             if (hit.Found)
             {
-                var materialScene = context.MaterialsScene;
-                var materialHit = materialScene[hit.Material];
-                var materialHitColor = materialScene[hit.Material].Color;
-
                 foreach (var light in context.LightsScene)
                 {
-                    color = this.GetPixelColor(context, hit, color, light, materialHit, materialHitColor, ray, recursiveLevel);
+                    color = this.GetPixelColor(context, hit, color, light, ray, recursiveLevel);
                 }
 
                 return new Color3 { Red = color.Red/context.LightsScene.Count, Green = color.Green/context.LightsScene.Count, Blue = color.Blue/context.LightsScene.Count };
@@ -115,16 +112,20 @@
             return new Color3 { Red = context.ImageScene.Color3.Red, Green = context.ImageScene.Color3.Green, Blue = context.ImageScene.Color3.Blue };
         }
 
-        private Color3 GetPixelColor(ObjectContext context, Hit hit, Color3 color, Light light, Material materialHit, Color3 materialHitColor, Ray ray, int recursiveLevel)
+        private Color3 GetPixelColor(ObjectContext context, Hit hit, Color3 color, Light light, Ray ray, int recursiveLevel)
         {
+            var materialScene = context.MaterialsScene;
+            var materialHit = materialScene[hit.Material];
+            var materialHitColor = materialScene[hit.Material].Color;
             var lightColor = light.Color;
+            var environment = context.IsEnvironmentEnabled ? materialHit.Environment : 1;
 
             // cálculo da componente de reflexão ambiente com origem na fonte de luz light
             color = new Color3
             {
-                Red = color.Red + lightColor.Red * materialHitColor.Red * materialHit.Environment,
-                Green = color.Green + lightColor.Green * materialHitColor.Green * materialHit.Environment,
-                Blue = color.Blue + lightColor.Blue * materialHitColor.Blue * materialHit.Environment
+                Red = color.Red + lightColor.Red * materialHitColor.Red * environment,
+                Green = color.Green + lightColor.Green * materialHitColor.Green * environment,
+                Blue = color.Blue + lightColor.Blue * materialHitColor.Blue * environment
             };
 
             // cálculo da componente de reflexão difusa com origem na fonte de luz light
@@ -157,89 +158,118 @@
             if (recursiveLevel > 0)
             {
                 recursiveLevel--;
+
                 // comecem por calcular o co-seno do ângulo do raio incidente
                 var cosThetaV = -Vector3.Dot(ray.Direction, hit.IntersectionNormal);
 
-                if (materialHit.Specular > 0.0)
-                { 
-                    // o material constituinte do objecto
-                    //intersectado reflecte a luz especular
-                    // calculem a direcção do raio reflectido
-                    var r = new Vector3(
-                        (float)(ray.Direction.X + 2.0 * cosThetaV * hit.IntersectionNormal.X),
-                        (float)(ray.Direction.Y + 2.0 * cosThetaV * hit.IntersectionNormal.Y),
-                        (float)(ray.Direction.Z + 2.0 * cosThetaV * hit.IntersectionNormal.Z));
-
-                    // normalizem o vector
-                    var rNormal = Vector3.Normalize(r);
-                    // construam o raio reflectido que tem origem no ponto de intersecção e a
-                    //direcção do vector r
-                    var reflectedRay = new Ray 
-                    {
-                        Origin = hit.IntersectionPoint + (float)Utils.Constants.Epsilon * rNormal,
-                        Direction = rNormal 
-                    };
-
-                    // uma vez construído o raio, deverão invocar a função traceRay(), a qual irá
-                    //acompanhar recursivamente o percurso do referido raio; quando regressar, a
-                    //cor retornada por esta função deverá ser usada para calcular a componente
-                    //de reflexão especular, a qual será adicionada à cor color
-
-                    var recursiveColor = this.TraceRay(reflectedRay, context, recursiveLevel);
-                    color = new Color3 
-                    {
-                        Red = color.Red + materialHitColor.Red * materialHit.Specular * recursiveColor.Red,
-                        Green = color.Green + materialHitColor.Green * materialHit.Specular * recursiveColor.Green,
-                        Blue = color.Blue + materialHitColor.Blue * materialHit.Specular * recursiveColor.Blue,
-                    };
+                if (materialHit.Specular > 0.0 && context.IsReflectionEnabled)
+                {
+                    color = this.GetReflectionColor(context, hit, color, materialHit, materialHitColor, ray, recursiveLevel, cosThetaV);
                 }
 
-                if (materialHit.Refraction > 0.0)
+                if (materialHit.Refraction > 0.0 && context.IsRefractionEnabled)
                 {
-                    // o material constituinte do objecto intersectado refracta a luz
-                    // para calcular a razão entre os índices de refracção e o co-seno do ângulo do
-                    //raio refractado, comecem por admitir que o raio luminoso está a transitar do
-                    //ar para o meio constituinte do objecto intersectado
-                    var eta = 1.0 / materialHit.RefractionIndex;
-                    var cosThetaR = Math.Sqrt(1.0 - eta * eta * (1.0 - cosThetaV * cosThetaV));
-
-                    // se o raio luminoso estiver a transitar do meio constituinte do objecto
-                    // intersectado para o ar, invertam a razão entre os índices de refracção e
-                    //troquem o sinal do co - seno do ângulo do raio refractado
-                    if (cosThetaV < 0.0)
-                    {
-                        eta = materialHit.RefractionIndex;
-                        cosThetaR = -cosThetaR;
-                    }
-
-                    // calculem a direcção do raio refractado:
-                    var r = new Vector3(
-                        (float)(ray.Direction.X + (eta * cosThetaV - cosThetaR) * hit.IntersectionNormal.X),
-                        (float)(ray.Direction.Y + (eta * cosThetaV - cosThetaR) * hit.IntersectionNormal.Y),
-                        (float)(ray.Direction.Z + (eta * cosThetaV - cosThetaR) * hit.IntersectionNormal.Z));
-
-                    // normalizem o vector
-                    var rNormal = Vector3.Normalize(r);
-
-                    // construam o raio refractado que tem origem no ponto de intersecção e a
-                    //direcção do vector r
-                    var refractedRay = new Ray { Origin = hit.IntersectionPoint + (float)Utils.Constants.Epsilon * rNormal, Direction = rNormal };
-
-                    // uma vez construído o raio, deverão invocar a função traceRay(), a qual irá
-                    //acompanhar recursivamente o percurso do referido raio; quando regressar, a
-                    //cor retornada por esta função deverá ser usada para calcular a componente
-                    //de refracção, a qual será adicionada à cor color
-                    
-                    var recursiveColor = this.TraceRay(refractedRay, context, recursiveLevel);
-                    color = new Color3
-                    {
-                        Red = color.Red + materialHitColor.Red * materialHit.Refraction * recursiveColor.Red,
-                        Green = color.Green + materialHitColor.Green * materialHit.Refraction * recursiveColor.Green,
-                        Blue = color.Blue + materialHitColor.Blue * materialHit.Refraction * recursiveColor.Blue,
-                    };
+                    color = this.GetRefractionLight(context, hit, color, materialHit, materialHitColor, ray, recursiveLevel, cosThetaV);
                 }
             }
 
+            return color;
+        }
+
+        private Color3 GetRefractionLight(
+            ObjectContext context,
+            Hit hit,
+            Color3 color,
+            Material materialHit,
+            Color3 materialHitColor,
+            Ray ray,
+            int recursiveLevel, 
+            float cosThetaV)
+        {
+            // o material constituinte do objecto intersectado refracta a luz
+            // para calcular a razão entre os índices de refracção e o co-seno do ângulo do
+            //raio refractado, comecem por admitir que o raio luminoso está a transitar do
+            //ar para o meio constituinte do objecto intersectado
+            var eta = 1.0 / materialHit.RefractionIndex;
+            var cosThetaR = Math.Sqrt(1.0 - eta * eta * (1.0 - cosThetaV * cosThetaV));
+
+            // se o raio luminoso estiver a transitar do meio constituinte do objecto
+            // intersectado para o ar, invertam a razão entre os índices de refracção e
+            //troquem o sinal do co - seno do ângulo do raio refractado
+            if (cosThetaV < 0.0)
+            {
+                eta = materialHit.RefractionIndex;
+                cosThetaR = -cosThetaR;
+            }
+
+            // calculem a direcção do raio refractado:
+            var r = new Vector3(
+                (float)(ray.Direction.X + (eta * cosThetaV - cosThetaR) * hit.IntersectionNormal.X),
+                (float)(ray.Direction.Y + (eta * cosThetaV - cosThetaR) * hit.IntersectionNormal.Y),
+                (float)(ray.Direction.Z + (eta * cosThetaV - cosThetaR) * hit.IntersectionNormal.Z));
+
+            // normalizem o vector
+            var rNormal = Vector3.Normalize(r);
+
+            // construam o raio refractado que tem origem no ponto de intersecção e a
+            //direcção do vector r
+            var refractedRay = new Ray { Origin = hit.IntersectionPoint + (float)Utils.Constants.Epsilon * rNormal, Direction = rNormal };
+
+            // uma vez construído o raio, deverão invocar a função traceRay(), a qual irá
+            //acompanhar recursivamente o percurso do referido raio; quando regressar, a
+            //cor retornada por esta função deverá ser usada para calcular a componente
+            //de refracção, a qual será adicionada à cor color
+
+            var recursiveColor = this.TraceRay(refractedRay, context, recursiveLevel);
+            color = new Color3
+            {
+                Red = color.Red + materialHitColor.Red * materialHit.Refraction * recursiveColor.Red,
+                Green = color.Green + materialHitColor.Green * materialHit.Refraction * recursiveColor.Green,
+                Blue = color.Blue + materialHitColor.Blue * materialHit.Refraction * recursiveColor.Blue,
+            };
+            return color;
+        }
+
+        private Color3 GetReflectionColor(
+            ObjectContext context,
+            Hit hit,
+            Color3 color,
+            Material materialHit,
+            Color3 materialHitColor,
+            Ray ray,
+            int recursiveLevel,
+            float cosThetaV)
+        {
+            // o material constituinte do objecto
+            //intersectado reflecte a luz especular
+            // calculem a direcção do raio reflectido
+            var r = new Vector3(
+                (float)(ray.Direction.X + 2.0 * cosThetaV * hit.IntersectionNormal.X),
+                (float)(ray.Direction.Y + 2.0 * cosThetaV * hit.IntersectionNormal.Y),
+                (float)(ray.Direction.Z + 2.0 * cosThetaV * hit.IntersectionNormal.Z));
+
+            // normalizem o vector
+            var rNormal = Vector3.Normalize(r);
+            // construam o raio reflectido que tem origem no ponto de intersecção e a
+            //direcção do vector r
+            var reflectedRay = new Ray
+            {
+                Origin = hit.IntersectionPoint + (float)Utils.Constants.Epsilon * rNormal,
+                Direction = rNormal
+            };
+
+            // uma vez construído o raio, deverão invocar a função traceRay(), a qual irá
+            //acompanhar recursivamente o percurso do referido raio; quando regressar, a
+            //cor retornada por esta função deverá ser usada para calcular a componente
+            //de reflexão especular, a qual será adicionada à cor color
+
+            var recursiveColor = this.TraceRay(reflectedRay, context, recursiveLevel);
+            color = new Color3
+            {
+                Red = color.Red + materialHitColor.Red * materialHit.Specular * recursiveColor.Red,
+                Green = color.Green + materialHitColor.Green * materialHit.Specular * recursiveColor.Green,
+                Blue = color.Blue + materialHitColor.Blue * materialHit.Specular * recursiveColor.Blue,
+            };
             return color;
         }
 
@@ -261,9 +291,10 @@
             foreach (var object3d in context.Objects)
             {
                 shadowHit.Found = false;
+                var origin = shadowRay.Origin;
                 var shadowRayTransformed = new Ray { Origin = shadowRay.Origin, Direction = shadowRay.Direction };
                 object3d.WorldCoordToObjCoord(shadowRayTransformed, object3d.Transformation);
-                object3d.Intersect(shadowRayTransformed, shadowHit);
+                object3d.Intersect(shadowRayTransformed, shadowHit, origin);
 
                 if (shadowHit.Found)
                 {
@@ -274,11 +305,12 @@
             if (!shadowHit.Found)
             {
                 //diffuse light
+                var difuseLight = context.IsDiffuseReflectionEnabled ? materialHit.Diffuse : 1;
                 color = new Color3
                 {
-                    Red = color.Red + lightColor.Red * materialHitColor.Red *  materialHit.Diffuse * cosTheta,
-                    Green = color.Green + lightColor.Green * materialHitColor.Green *  materialHit.Diffuse * cosTheta,
-                    Blue = color.Blue + lightColor.Blue * materialHitColor.Blue *  materialHit.Diffuse * cosTheta
+                    Red = color.Red + lightColor.Red * materialHitColor.Red * difuseLight * cosTheta,
+                    Green = color.Green + lightColor.Green * materialHitColor.Green * difuseLight * cosTheta,
+                    Blue = color.Blue + lightColor.Blue * materialHitColor.Blue * difuseLight * cosTheta
                 };
             }
 

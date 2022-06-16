@@ -18,7 +18,7 @@
             this.maxVector = new Vector3(0.5f, 0.5f, 0.5f);
         }
 
-        public override bool Intersect(Ray ray, Hit hit)
+        public override bool Intersect(Ray ray, Hit hit, Vector3 origin)
         {
             int axis = -1;
             if (this.IntersectXAxis(ray, ref axis) && this.IntersectYAxis(ray, ref axis) && this.IntersectZAxis(ray, ref axis))
@@ -27,7 +27,7 @@
                     ray.Origin.Y + ray.Direction.Y * this.tnear,
                     ray.Origin.Z + ray.Direction.Z * this.tnear);
 
-                this.ObjectCoordToWorldCoord(ray, hit, resultIntersect);
+                this.ObjectCoordToWorldCoord(ray,hit, resultIntersect, origin);
 
                 if (hit.Distance > Utils.Constants.Epsilon && hit.Distance < hit.MinDistance)
                 {

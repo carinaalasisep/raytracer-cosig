@@ -1,6 +1,7 @@
 ﻿namespace RayTracer
 {
     using System;
+    using System.Drawing.Imaging;
     using System.IO;
     using System.Windows.Forms;
     using RayTracer.Service;
@@ -52,8 +53,15 @@
 
         private void startBtn_Click(object sender, EventArgs e)
         {
+            this.context.IsEnvironmentEnabled = this.environmentReflection.Checked;
+            this.context.IsReflectionEnabled = this.specularReflection.Checked;
+            this.context.IsDiffuseReflectionEnabled = this.difuseReflection.Checked;
+            this.context.IsRefractionEnabled = this.refraction.Checked;
+            this.renderingLabel.Visible = true;
+
             this.PrimaryCalculations();
 
+            this.renderingLabel.Text = "Scene Rendered!";
             this.saveBtn.Enabled = true;
         }
 
@@ -75,6 +83,39 @@
             var num = sender as NumericUpDown;
             
             this.context.RecursiveLevel = (int)num.Value;
+
+            if(this.context.RecursiveLevel > 0)
+            {
+                this.refraction.Enabled = true;
+                this.specularReflection.Enabled = true;
+            }
+        }
+
+        private void saveBtn_Click(object sender, EventArgs e)
+        {
+            this.pictureBox1.Image.Save(AppDomain.CurrentDomain.BaseDirectory + "image" + DateTime.Now.ToFileTime() + ".jpeg", ImageFormat.Jpeg);
+
+            MessageBox.Show("Image saved with success");
+        }
+
+        private void refraction_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void specularReflection_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void difuseReflection_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void environmentReflection_CheckedChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

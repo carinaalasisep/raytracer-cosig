@@ -47,7 +47,7 @@
             this.panel3 = new System.Windows.Forms.Panel();
             this.label4 = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.label5 = new System.Windows.Forms.Label();
+            this.renderingLabel = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.recursion)).BeginInit();
             this.panel2.SuspendLayout();
@@ -57,7 +57,7 @@
             // 
             // loadBtn
             // 
-            this.loadBtn.Location = new System.Drawing.Point(21, 15);
+            this.loadBtn.Location = new System.Drawing.Point(21, 41);
             this.loadBtn.Name = "loadBtn";
             this.loadBtn.Size = new System.Drawing.Size(127, 55);
             this.loadBtn.TabIndex = 0;
@@ -68,27 +68,28 @@
             // saveBtn
             // 
             this.saveBtn.Enabled = false;
-            this.saveBtn.Location = new System.Drawing.Point(21, 183);
+            this.saveBtn.Location = new System.Drawing.Point(21, 159);
             this.saveBtn.Name = "saveBtn";
             this.saveBtn.Size = new System.Drawing.Size(127, 53);
             this.saveBtn.TabIndex = 1;
             this.saveBtn.Text = "SAVE SCENE";
             this.saveBtn.UseVisualStyleBackColor = true;
+            this.saveBtn.Click += new System.EventHandler(this.saveBtn_Click);
             // 
             // panel1
             // 
             this.panel1.Controls.Add(this.labelSceneLoad);
             this.panel1.Controls.Add(this.saveBtn);
             this.panel1.Controls.Add(this.loadBtn);
-            this.panel1.Location = new System.Drawing.Point(33, 397);
+            this.panel1.Location = new System.Drawing.Point(33, 423);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(180, 266);
+            this.panel1.Size = new System.Drawing.Size(180, 240);
             this.panel1.TabIndex = 2;
             // 
             // labelSceneLoad
             // 
             this.labelSceneLoad.AutoSize = true;
-            this.labelSceneLoad.Location = new System.Drawing.Point(35, 110);
+            this.labelSceneLoad.Location = new System.Drawing.Point(31, 99);
             this.labelSceneLoad.Name = "labelSceneLoad";
             this.labelSceneLoad.Size = new System.Drawing.Size(103, 20);
             this.labelSceneLoad.TabIndex = 2;
@@ -119,8 +120,7 @@
             this.panel2.Controls.Add(this.label1);
             this.panel2.Controls.Add(this.startBtn);
             this.panel2.Controls.Add(this.recursion);
-            this.panel2.Controls.Add(this.label3);
-            this.panel2.Location = new System.Drawing.Point(248, 397);
+            this.panel2.Location = new System.Drawing.Point(248, 423);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(391, 130);
             this.panel2.TabIndex = 4;
@@ -137,7 +137,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(3, 0);
+            this.label3.Location = new System.Drawing.Point(248, 400);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(69, 20);
             this.label3.TabIndex = 6;
@@ -146,7 +146,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(33, 389);
+            this.label2.Location = new System.Drawing.Point(33, 400);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(48, 20);
             this.label2.TabIndex = 5;
@@ -154,7 +154,7 @@
             // 
             // progressBar1
             // 
-            this.progressBar1.Location = new System.Drawing.Point(439, 570);
+            this.progressBar1.Location = new System.Drawing.Point(439, 605);
             this.progressBar1.Name = "progressBar1";
             this.progressBar1.Size = new System.Drawing.Size(200, 41);
             this.progressBar1.TabIndex = 7;
@@ -162,55 +162,64 @@
             // environmentReflection
             // 
             this.environmentReflection.AutoSize = true;
-            this.environmentReflection.Location = new System.Drawing.Point(709, 423);
+            this.environmentReflection.Location = new System.Drawing.Point(31, 41);
             this.environmentReflection.Name = "environmentReflection";
             this.environmentReflection.Size = new System.Drawing.Size(185, 24);
             this.environmentReflection.TabIndex = 2;
             this.environmentReflection.Text = "Environment Reflection";
             this.environmentReflection.UseVisualStyleBackColor = true;
+            this.environmentReflection.CheckedChanged += new System.EventHandler(this.environmentReflection_CheckedChanged);
             // 
             // difuseReflection
             // 
             this.difuseReflection.AutoSize = true;
-            this.difuseReflection.Location = new System.Drawing.Point(709, 462);
+            this.difuseReflection.Location = new System.Drawing.Point(31, 84);
             this.difuseReflection.Name = "difuseReflection";
             this.difuseReflection.Size = new System.Drawing.Size(144, 24);
             this.difuseReflection.TabIndex = 8;
             this.difuseReflection.Text = "Difuse Reflection";
             this.difuseReflection.UseVisualStyleBackColor = true;
+            this.difuseReflection.CheckedChanged += new System.EventHandler(this.difuseReflection_CheckedChanged);
             // 
             // specularReflection
             // 
             this.specularReflection.AutoSize = true;
-            this.specularReflection.Location = new System.Drawing.Point(709, 503);
+            this.specularReflection.Enabled = false;
+            this.specularReflection.Location = new System.Drawing.Point(31, 134);
             this.specularReflection.Name = "specularReflection";
             this.specularReflection.Size = new System.Drawing.Size(159, 24);
             this.specularReflection.TabIndex = 9;
             this.specularReflection.Text = "Specular Reflection";
             this.specularReflection.UseVisualStyleBackColor = true;
+            this.specularReflection.CheckedChanged += new System.EventHandler(this.specularReflection_CheckedChanged);
             // 
             // refraction
             // 
             this.refraction.AutoSize = true;
-            this.refraction.Location = new System.Drawing.Point(709, 539);
+            this.refraction.Enabled = false;
+            this.refraction.Location = new System.Drawing.Point(31, 182);
             this.refraction.Name = "refraction";
             this.refraction.Size = new System.Drawing.Size(99, 24);
             this.refraction.TabIndex = 10;
             this.refraction.Text = "Refraction";
             this.refraction.UseVisualStyleBackColor = true;
+            this.refraction.CheckedChanged += new System.EventHandler(this.refraction_CheckedChanged);
             // 
             // panel3
             // 
-            this.panel3.Controls.Add(this.label4);
-            this.panel3.Location = new System.Drawing.Point(687, 397);
+            this.panel3.Controls.Add(this.environmentReflection);
+            this.panel3.Controls.Add(this.refraction);
+            this.panel3.Controls.Add(this.difuseReflection);
+            this.panel3.Controls.Add(this.specularReflection);
+            this.panel3.Location = new System.Drawing.Point(687, 423);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(250, 266);
+            this.panel3.Size = new System.Drawing.Size(250, 240);
             this.panel3.TabIndex = 11;
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(3, -8);
+            this.label4.Location = new System.Drawing.Point(687, 400);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(61, 20);
             this.label4.TabIndex = 7;
@@ -224,27 +233,25 @@
             this.pictureBox1.TabIndex = 12;
             this.pictureBox1.TabStop = false;
             // 
-            // label5
+            // renderingLabel
             // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(307, 580);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(86, 20);
-            this.label5.TabIndex = 3;
-            this.label5.Text = "Rendering...";
-            this.label5.Visible = false;
+            this.renderingLabel.AutoSize = true;
+            this.renderingLabel.Location = new System.Drawing.Point(307, 615);
+            this.renderingLabel.Name = "renderingLabel";
+            this.renderingLabel.Size = new System.Drawing.Size(86, 20);
+            this.renderingLabel.TabIndex = 3;
+            this.renderingLabel.Text = "Rendering...";
+            this.renderingLabel.Visible = false;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1019, 719);
-            this.Controls.Add(this.label5);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.renderingLabel);
             this.Controls.Add(this.pictureBox1);
-            this.Controls.Add(this.refraction);
-            this.Controls.Add(this.specularReflection);
-            this.Controls.Add(this.difuseReflection);
-            this.Controls.Add(this.environmentReflection);
+            this.Controls.Add(this.label3);
             this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.panel1);
@@ -286,7 +293,7 @@
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Label labelSceneLoad;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label renderingLabel;
     }
 }
 
