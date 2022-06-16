@@ -63,6 +63,7 @@
                         Origin = origin,
                         Direction = directionNormal
                     };
+
                     // uma vez construído o raio, deverão invocar a função traceRay(), a qual irá            acompanhar recursivamente o percurso do referido raio; quando regressar, esta
                     //função deverá retornar uma cor color
                     var color = this.TraceRay(ray, context, context.RecursiveLevel); // em que ray designa o raio a ser acompanhado e rec um  inteiro que contém o nível máximo de recursividade
@@ -165,9 +166,9 @@
                     //intersectado reflecte a luz especular
                     // calculem a direcção do raio reflectido
                     var r = new Vector3(
-                        (float)(ray.Direction.X + 2.0 * cosThetaV + hit.IntersectionNormal.X),
-                        (float)(ray.Direction.Y + 2.0 * cosThetaV + hit.IntersectionNormal.Y),
-                        (float)(ray.Direction.Z + 2.0 * cosThetaV + hit.IntersectionNormal.Z));
+                        (float)(ray.Direction.X + 2.0 * cosThetaV * hit.IntersectionNormal.X),
+                        (float)(ray.Direction.Y + 2.0 * cosThetaV * hit.IntersectionNormal.Y),
+                        (float)(ray.Direction.Z + 2.0 * cosThetaV * hit.IntersectionNormal.Z));
 
                     // normalizem o vector
                     var rNormal = Vector3.Normalize(r);
@@ -213,9 +214,9 @@
 
                     // calculem a direcção do raio refractado:
                     var r = new Vector3(
-                        (float)(ray.Direction.X + (eta * cosThetaV - cosThetaR) + hit.IntersectionNormal.X),
-                        (float)(ray.Direction.Y + (eta * cosThetaV - cosThetaR) + hit.IntersectionNormal.Y),
-                        (float)(ray.Direction.Z + (eta * cosThetaV - cosThetaR) + hit.IntersectionNormal.Z));
+                        (float)(ray.Direction.X + (eta * cosThetaV - cosThetaR) * hit.IntersectionNormal.X),
+                        (float)(ray.Direction.Y + (eta * cosThetaV - cosThetaR) * hit.IntersectionNormal.Y),
+                        (float)(ray.Direction.Z + (eta * cosThetaV - cosThetaR) * hit.IntersectionNormal.Z));
 
                     // normalizem o vector
                     var rNormal = Vector3.Normalize(r);
