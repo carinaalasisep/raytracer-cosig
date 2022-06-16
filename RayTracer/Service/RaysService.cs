@@ -24,7 +24,6 @@
                 Y = (float)0.0,
                 Z = (float)cameraScene.Distance
             };
-            var recursiveLevel = 1;
 
             var pixel = new Color3[imageScene.Vertical, imageScene.Horizontal];
             // Apoio ao debugging - raios primários
@@ -66,7 +65,7 @@
                     };
                     // uma vez construído o raio, deverão invocar a função traceRay(), a qual irá            acompanhar recursivamente o percurso do referido raio; quando regressar, esta
                     //função deverá retornar uma cor color
-                    var color = this.TraceRay(ray, recursiveLevel, context); // em que ray designa o raio a ser acompanhado e rec um  inteiro que contém o nível máximo de recursividade
+                    var color = this.TraceRay(ray, context, context.RecursiveLevel); // em que ray designa o raio a ser acompanhado e rec um  inteiro que contém o nível máximo de recursividade
                                                                              // limitem as componentes primárias (R, G e B) da cor color. Se alguma delas for < 0.0,            façam - na = 0.0(isto nunca deverá acontecer); se alguma delas for > 1.0, façam - na =             1.0(isto poderá e irá acontecer, pois alguns dos materiais definidos no ficheiro             descritivo da cena 3D reflectem(e / ou refractam) mais luz do que a luz que sobre eles              incide
                     color.CheckRange();
 
@@ -85,7 +84,7 @@
             pictureBox.Image = bitmap;
         }
 
-        private Color3 TraceRay(Ray ray, int recursiveLevel, ObjectContext context)
+        private Color3 TraceRay(Ray ray, ObjectContext context, int recursiveLevel)
         {
             Hit hit = new Hit();
 
@@ -106,7 +105,7 @@
 
                 foreach (var light in context.LightsScene)
                 {
-                    color = this.GetPixelColor(context, hit, color, light, materialHit, materialHitColor, recursiveLevel, ray);
+                    color = this.GetPixelColor(context, hit, color, light, materialHit, materialHitColor, ray, recursiveLevel);
                 }
 
                 return new Color3 { Red = color.Red/context.LightsScene.Count, Green = color.Green/context.LightsScene.Count, Blue = color.Blue/context.LightsScene.Count };
@@ -115,7 +114,7 @@
             return new Color3 { Red = context.ImageScene.Color3.Red, Green = context.ImageScene.Color3.Green, Blue = context.ImageScene.Color3.Blue };
         }
 
-        private Color3 GetPixelColor(ObjectContext context, Hit hit, Color3 color, Light light, Material materialHit, Color3 materialHitColor, int recursiveLevel, Ray ray)
+        private Color3 GetPixelColor(ObjectContext context, Hit hit, Color3 color, Light light, Material materialHit, Color3 materialHitColor, Ray ray, int recursiveLevel)
         {
             var lightColor = light.Color;
 
@@ -156,6 +155,7 @@
 
             if (recursiveLevel > 0)
             {
+                recursiveLevel--;
                 // comecem por calcular o co-seno do ângulo do raio incidente
                 var cosThetaV = -Vector3.Dot(ray.Direction, hit.IntersectionNormal);
 
@@ -178,11 +178,13 @@
                         Origin = hit.IntersectionPoint + (float)Utils.Constants.Epsilon * rNormal,
                         Direction = rNormal 
                     };
+
                     // uma vez construído o raio, deverão invocar a função traceRay(), a qual irá
                     //acompanhar recursivamente o percurso do referido raio; quando regressar, a
                     //cor retornada por esta função deverá ser usada para calcular a componente
                     //de reflexão especular, a qual será adicionada à cor color
-                    var recursiveColor = this.TraceRay(reflectedRay, recursiveLevel - 1, context);
+
+                    var recursiveColor = this.TraceRay(reflectedRay, context, recursiveLevel);
                     color = new Color3 
                     {
                         Red = color.Red + materialHitColor.Red * materialHit.Specular * recursiveColor.Red,
@@ -192,7 +194,7 @@
                 }
 
                 if (materialHit.Refraction > 0.0)
-                { 
+                {
                     // o material constituinte do objecto intersectado refracta a luz
                     // para calcular a razão entre os índices de refracção e o co-seno do ângulo do
                     //raio refractado, comecem por admitir que o raio luminoso está a transitar do
@@ -203,7 +205,7 @@
                     // se o raio luminoso estiver a transitar do meio constituinte do objecto
                     // intersectado para o ar, invertam a razão entre os índices de refracção e
                     //troquem o sinal do co - seno do ângulo do raio refractado
-                        if (cosThetaV < 0.0)
+                    if (cosThetaV < 0.0)
                     {
                         eta = materialHit.RefractionIndex;
                         cosThetaR = -cosThetaR;
@@ -226,7 +228,8 @@
                     //acompanhar recursivamente o percurso do referido raio; quando regressar, a
                     //cor retornada por esta função deverá ser usada para calcular a componente
                     //de refracção, a qual será adicionada à cor color
-                    var recursiveColor = this.TraceRay(refractedRay, recursiveLevel - 1, context);
+                    
+                    var recursiveColor = this.TraceRay(refractedRay, context, recursiveLevel);
                     color = new Color3
                     {
                         Red = color.Red + materialHitColor.Red * materialHit.Refraction * recursiveColor.Red,

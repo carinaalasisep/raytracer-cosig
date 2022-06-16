@@ -50,7 +50,6 @@
             var p0p1Distance = this.P1 - this.P0;
             var p0p2Distance = this.P2 - this.P0;
 
-            // no need to normalize
             var crossedVector = Vector3.Cross(p0p1Distance, p0p2Distance);  //N 
             crossedVector = Vector3.Normalize(crossedVector);
             var area2 = crossedVector.Length(); // TODO: Check if area2 variable is necessary
@@ -119,9 +118,7 @@
                 return false;
             }
 
-            hit.IntersectionPoint = intersectionPoint;
-
-            this.ObjCoordToWorldCoord(ray, hit, intersectionPoint);
+            this.ObjectCoordToWorldCoord(ray, hit, intersectionPoint);
 
             if (hit.Distance > Utils.Constants.Epsilon && hit.Distance < hit.MinDistance)
             {

@@ -45,11 +45,16 @@
                     }
                 }
             }
+
+            this.labelSceneLoad.Visible = true;
+            this.startBtn.Enabled = true;
         }
 
         private void startBtn_Click(object sender, EventArgs e)
         {
             this.PrimaryCalculations();
+
+            this.saveBtn.Enabled = true;
         }
 
         private void PrimaryCalculations()
@@ -65,5 +70,11 @@
             this.raysService.CalculatePrimaryRays(cameraScene, imageScene, projectionHeight, projectionWidth, pixelDimension, this.pictureBox1, this.context);
         }
 
+        private void recursion_ValueChanged(object sender, EventArgs e)
+        {
+            var num = sender as NumericUpDown;
+            
+            this.context.RecursiveLevel = (int)num.Value;
+        }
     }
 }

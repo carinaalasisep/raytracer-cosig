@@ -27,8 +27,7 @@
                     ray.Origin.Y + ray.Direction.Y * this.tnear,
                     ray.Origin.Z + ray.Direction.Z * this.tnear);
 
-                hit.IntersectionPoint = resultIntersect;
-                this.ObjCoordToWorldCoord(ray, hit, resultIntersect);
+                this.ObjectCoordToWorldCoord(ray, hit, resultIntersect);
 
                 if (hit.Distance > Utils.Constants.Epsilon && hit.Distance < hit.MinDistance)
                 {
@@ -37,6 +36,8 @@
                     hit.MinDistance = hit.Distance;
 
                     hit.Material = this.Material;
+
+                    var normal = Vector3.Normalize(resultIntersect);
 
                     switch (axis)
                     {

@@ -33,15 +33,11 @@
             return Vector3.Normalize(new Vector3(normalWorld[0], normalWorld[1], normalWorld[2]));
         }
 
-        public void ObjCoordToWorldCoord(Ray ray, Hit hit, Vector3 intersectionPoint)
+        public void ObjectCoordToWorldCoord(Ray ray, Hit hit, Vector3 intersectionPoint)
         {
-            float[] hitPoint = { hit.IntersectionPoint.X, hit.IntersectionPoint.Y, hit.IntersectionPoint.Z, 1.0f };
+            hit.IntersectionPoint = this.ObjectCoordToWorldCoordVector(intersectionPoint);
 
-            float[] aux = Utils.Helper.Multiply(hitPoint, this.Transformation.Matrix);
-
-            hit.IntersectionPoint = new Vector3(aux[0] / aux[3], aux[1] / aux[3], aux[2] / aux[3]);
-
-            hit.Distance = Vector3.Subtract(this.ObjectCoordToWorldCoordVector(intersectionPoint), ray.Origin).Length();
+            hit.Distance = Vector3.Subtract(hit.IntersectionPoint, ray.Origin).Length();
         }
 
         private Vector3 ObjectCoordToWorldCoordVector(Vector3 vectorObject)

@@ -23,5 +23,7 @@
         public List<Object3D> Objects { get; set; } = new List<Object3D>();
 
         public List<Transformation> TransformationsScene { get; set; } = new List<Transformation>();
+
+        public int RecursiveLevel { get; set; } = 0;
     }
 }
