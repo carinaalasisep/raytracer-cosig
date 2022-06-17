@@ -3,6 +3,7 @@
     using System;
     using System.Drawing;
     using System.Numerics;
+    using System.Threading.Tasks;
     using System.Windows.Forms;
     using RayTracer.Model;
     using RayTracer.Strategies;
@@ -26,16 +27,12 @@
             };
 
             var pixel = new Color3[imageScene.Vertical, imageScene.Horizontal];
-            // Apoio ao debugging - raios primários
-            //var directionArray = new Vector3[imageScene.Vertical, imageScene.Horizontal];
-            var bitmap = new Bitmap(imageScene.Vertical, imageScene.Horizontal);
-            var value = (700 / (int)projectionWidth) * 10;
 
-            // ciclo para percorrer todas as linhas da imagem
-            for (var verticalPos = 0; verticalPos < imageScene.Vertical; verticalPos++)
+            var bitmap = new Bitmap(imageScene.Vertical, imageScene.Horizontal);
+
+            Parallel.For(0, imageScene.Vertical, new ParallelOptions { MaxDegreeOfParallelism = 10 }, verticalPos =>
             {
-                // ciclo para percorrer todas as colunas (píxeis) da linha j 
-                for (var horizontalPos = 0; horizontalPos < imageScene.Horizontal; horizontalPos++)
+                for (int horizontalPos = 0; horizontalPos < imageScene.Horizontal; horizontalPos++)
                 {
                     pixel[verticalPos, horizontalPos] = new Color3();
 
@@ -54,9 +51,6 @@
                     //sempre normalizado)
                     var directionNormal = Vector3.Normalize(direction);
 
-                    // Apoio ao debugging - raios primários
-                    //directionArray[verticalPos, horizontalPos] = directionNormal; 
-
                     // agora que já conhecem quer a origem, quer a direcção do raio, deverão construí-lo
                     var ray = new Ray
                     {
@@ -64,10 +58,13 @@
                         Direction = directionNormal
                     };
 
-                    // uma vez construído o raio, deverão invocar a função traceRay(), a qual irá            acompanhar recursivamente o percurso do referido raio; quando regressar, esta
-                    //função deverá retornar uma cor color
-                    var color = this.TraceRay(ray, context, context.RecursiveLevel); // em que ray designa o raio a ser acompanhado e rec um  inteiro que contém o nível máximo de recursividade
-                                                                             // limitem as componentes primárias (R, G e B) da cor color. Se alguma delas for < 0.0,            façam - na = 0.0(isto nunca deverá acontecer); se alguma delas for > 1.0, façam - na =             1.0(isto poderá e irá acontecer, pois alguns dos materiais definidos no ficheiro             descritivo da cena 3D reflectem(e / ou refractam) mais luz do que a luz que sobre eles              incide
+                    // uma vez construído o raio, deverão invocar a função traceRay(), a qual irá acompanhar recursivamente o percurso do referido raio; quando regressar, esta
+                    //função deverá retornar uma cor color// em que ray designa o raio a ser acompanhado e rec um  inteiro que contém o nível máximo de recursividade
+                    // limitem as componentes primárias (R, G e B) da cor color. Se alguma delas for < 0.0,
+                    // façam - na = 0.0(isto nunca deverá acontecer); se alguma delas for > 1.0, façam - na =
+                    // 1.0(isto poderá e irá acontecer, pois alguns dos materiais definidos no ficheiro
+                    // descritivo da cena 3D reflectem(e / ou refractam) mais luz do que a luz que sobre eles incidem
+                    var color = this.TraceRay(ray, context, context.RecursiveLevel); 
                     color.CheckRange();
 
                     // convertam as componentes primárias da cor color num formato compatível com o
@@ -78,11 +75,24 @@
                     pixel[verticalPos, horizontalPos].Red = (int)255.0 * color.Red;
                     pixel[verticalPos, horizontalPos].Green = (int)255.0 * color.Green;
                     pixel[verticalPos, horizontalPos].Blue = (int)255.0 * color.Blue;
-                    bitmap.SetPixel(verticalPos, horizontalPos, Color.FromArgb((int)pixel[verticalPos, horizontalPos].Red, (int)pixel[verticalPos, horizontalPos].Green, (int)pixel[verticalPos, horizontalPos].Blue));
                 }
-            }
+            });
+
+            SetBitMapPixelData(imageScene, pixel, bitmap);
 
             pictureBox.Image = bitmap;
+        }
+
+        private static void SetBitMapPixelData(Model.Image imageScene, Color3[,] pixel, Bitmap bitmap)
+        {
+            for (int verticalPos = 0; verticalPos < imageScene.Vertical; verticalPos++)
+            {
+                for (int horizontalPos = 0; horizontalPos < imageScene.Horizontal; horizontalPos++)
+                {
+                    bitmap.SetPixel(verticalPos, horizontalPos, Color.FromArgb((int)pixel[verticalPos, horizontalPos].Red, (int)pixel[verticalPos, horizontalPos].Green, (int)pixel[verticalPos, horizontalPos].Blue));
+
+                }
+            }
         }
 
         private Color3 TraceRay(Ray ray, ObjectContext context, int recursiveLevel)

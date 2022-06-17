@@ -1,6 +1,7 @@
 ﻿namespace RayTracer
 {
     using System;
+    using System.Diagnostics;
     using System.Drawing.Imaging;
     using System.IO;
     using System.Windows.Forms;
@@ -30,7 +31,7 @@
             using (OpenFileDialog openFileDialog = new OpenFileDialog())
             {
                 openFileDialog.InitialDirectory = "c:\\";
-                openFileDialog.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
+                openFileDialog.Filter = "Text Files|*.txt";
                 openFileDialog.FilterIndex = 2;
                 openFileDialog.RestoreDirectory = true;
 
@@ -47,19 +48,30 @@
                 }
             }
 
-            this.labelSceneLoad.Visible = true;
+            this.loadedLabel.Visible = true;
             this.startBtn.Enabled = true;
         }
 
         private void startBtn_Click(object sender, EventArgs e)
         {
+            this.renderingLabel.Text = "Rendering...";
+
             this.context.IsEnvironmentEnabled = this.environmentReflection.Checked;
             this.context.IsReflectionEnabled = this.specularReflection.Checked;
             this.context.IsDiffuseReflectionEnabled = this.difuseReflection.Checked;
             this.context.IsRefractionEnabled = this.refraction.Checked;
-            this.renderingLabel.Visible = true;
+
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
 
             this.PrimaryCalculations();
+
+            var t = TimeSpan.FromMilliseconds(stopwatch.ElapsedMilliseconds);
+
+            this.labelTime.Text = "Successfully Rendered in " + string.Format("{0:D2}:{1:D2}.{2:D3}",
+            t.Minutes,
+            t.Seconds,
+            t.Milliseconds);
 
             this.renderingLabel.Text = "Scene Rendered!";
             this.saveBtn.Enabled = true;
