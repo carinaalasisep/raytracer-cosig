@@ -12,7 +12,7 @@
             obj2 = temp;
         }
 
-        public static float[] Multiply(float[] pointA, Matrix4x4 transformMatrix) // multiplica uma matriz 4 x 4 por uma matriz-coluna representativa de um ponto ou vector expresso em coordenadas homogéneas
+        public static float[] Multiply1(float[] pointA, Matrix4x4 transformMatrix) // multiplica uma matriz 4 x 4 por uma matriz-coluna representativa de um ponto ou vector expresso em coordenadas homogéneas
         {
             float[] pointB = new float[4];
 

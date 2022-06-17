@@ -51,7 +51,6 @@
 
             foreach (var triangleMesh in context.TrianglesScene)
             {
-                // TODO: preciso de normalizar outra vez?...
                 foreach (var triangle in triangleMesh.TriangleList)
                 {
                     triangle.Transformation = triangle.Transform(context.CameraScene.Transformation, triangleMesh.TriangleList.First().TransformationIndex, context.TransformationsScene);

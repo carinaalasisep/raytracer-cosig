@@ -90,7 +90,6 @@
                 for (int horizontalPos = 0; horizontalPos < imageScene.Horizontal; horizontalPos++)
                 {
                     bitmap.SetPixel(verticalPos, horizontalPos, Color.FromArgb((int)pixel[verticalPos, horizontalPos].Red, (int)pixel[verticalPos, horizontalPos].Green, (int)pixel[verticalPos, horizontalPos].Blue));
-
                 }
             }
         }
@@ -330,7 +329,7 @@
         Vector3 ApplyTransformation(Vector3 point, Transformation transformation)
         {
             float[] pointA = { point.X, point.Y, point.Z, 1.0f };
-            float[] pointB = Utils.Helper.Multiply(pointA, transformation.Matrix);
+            float[] pointB = Utils.Helper.Multiply1(pointA, transformation.Matrix);
 
             var newPoint = new Vector3(pointB[0] / pointB[3], pointB[1] / pointB[3], pointB[2] / pointB[3]);
 

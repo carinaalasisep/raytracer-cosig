@@ -31,7 +31,7 @@
 
         public void Translate(Vector3 position)
         {
-            Matrix4x4 translateMatrix = new Matrix4x4(1.0f, 0.0f, 0.0f, position.X, 0.0f, 1.0f, 0.0f, position.Y,
+            var translateMatrix = new Matrix4x4(1.0f, 0.0f, 0.0f, position.X, 0.0f, 1.0f, 0.0f, position.Y,
                 0.0f, 0.0f, 1.0f, position.Z, 0.0f, 0.0f, 0.0f, 1.0f);
 
             this.Matrix = Matrix4x4.Multiply(this.Matrix, translateMatrix);
@@ -39,8 +39,8 @@
 
         public void RotateX(float x)
         {
-            double radX = (Math.PI / 180) * x;
-            Matrix4x4 rotateXMatrix = new Matrix4x4(1.0f, 0.0f, 0.0f, 0.0f, 0.0f, (float)Math.Cos(radX), (float)-Math.Sin(radX), 0.0f
+            var radX = (Math.PI / 180) * x;
+            var rotateXMatrix = new Matrix4x4(1.0f, 0.0f, 0.0f, 0.0f, 0.0f, (float)Math.Cos(radX), (float)-Math.Sin(radX), 0.0f
                 , 0.0f, (float)Math.Sin(radX), (float)Math.Cos(radX), 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
 
             this.Matrix = Matrix4x4.Multiply(this.Matrix, rotateXMatrix);
@@ -48,8 +48,8 @@
 
         public void RotateY(float y)
         {
-            float radY = (float)(Math.PI / 180) * y;
-            Matrix4x4 rotateYMatrix = new Matrix4x4((float)Math.Cos(radY), 0.0f, (float)Math.Sin(radY), 0.0f, 0.0f, 1.0f, 0.0f, 0.0f
+            var radY = (float)(Math.PI / 180) * y;
+            var rotateYMatrix = new Matrix4x4((float)Math.Cos(radY), 0.0f, (float)Math.Sin(radY), 0.0f, 0.0f, 1.0f, 0.0f, 0.0f
                 , (float)-Math.Sin(radY), 0.0f, (float)Math.Cos(radY), 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
 
             this.Matrix = Matrix4x4.Multiply(this.Matrix, rotateYMatrix);
@@ -57,8 +57,8 @@
 
         public void RotateZ(float z)
         {
-            float radZ = (float)(Math.PI / 180) * z;
-            Matrix4x4 rotateZMatrix = new Matrix4x4((float)Math.Cos(radZ), (float)-Math.Sin(radZ), 0.0f, 0.0f, (float)Math.Sin(radZ), (float)Math.Cos(radZ),
+            var radZ = (float)(Math.PI / 180) * z;
+            var rotateZMatrix = new Matrix4x4((float)Math.Cos(radZ), (float)-Math.Sin(radZ), 0.0f, 0.0f, (float)Math.Sin(radZ), (float)Math.Cos(radZ),
                 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
 
             this.Matrix = Matrix4x4.Multiply(this.Matrix, rotateZMatrix);
@@ -66,7 +66,7 @@
 
         public void Scale(Vector3 scale)
         {
-            Matrix4x4 scaleMatrix = new Matrix4x4(scale.X, 0.0f, 0.0f, 0.0f, 0.0f, scale.Y, 0.0f, 0.0f,
+            var scaleMatrix = new Matrix4x4(scale.X, 0.0f, 0.0f, 0.0f, 0.0f, scale.Y, 0.0f, 0.0f,
                 0.0f, 0.0f, scale.Z, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
 
             this.Matrix = Matrix4x4.Multiply(this.Matrix, scaleMatrix);

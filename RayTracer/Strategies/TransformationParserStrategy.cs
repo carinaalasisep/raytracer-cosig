@@ -66,7 +66,7 @@
                         result.ScaleZ = double.Parse(elementsArray[3]);
                         result.Scale(new Vector3(float.Parse(elementsArray[1], CultureInfo.InvariantCulture.NumberFormat),
                         (float.Parse(elementsArray[2], CultureInfo.InvariantCulture.NumberFormat)),
-                        (float.Parse(elementsArray[2], CultureInfo.InvariantCulture.NumberFormat))));
+                        (float.Parse(elementsArray[3], CultureInfo.InvariantCulture.NumberFormat))));
                     }
                 }
             }

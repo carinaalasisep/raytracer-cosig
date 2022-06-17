@@ -28,7 +28,7 @@
 
             float[] normalObject = { normal.X, normal.Y, normal.Z, 0.0f };
 
-            float[] normalWorld = Utils.Helper.Multiply(normalObject, transposeMatrix);
+            float[] normalWorld = Utils.Helper.Multiply1(normalObject, transposeMatrix);
 
             return Vector3.Normalize(new Vector3(normalWorld[0], normalWorld[1], normalWorld[2]));
         }
@@ -37,14 +37,14 @@
         {
             hit.IntersectionPoint = this.ObjectCoordToWorldCoordVector(intersectionPoint);
 
-            hit.Distance = Vector3.Subtract(ray.Origin, hit.IntersectionPoint).Length();
+            hit.Distance = Vector3.Subtract(hit.IntersectionPoint, origin).Length();
         }
 
         private Vector3 ObjectCoordToWorldCoordVector(Vector3 vectorObject)
         {
             float[] vec = { vectorObject.X, vectorObject.Y, vectorObject.Z, 1.0f };
 
-            float[] aux = Utils.Helper.Multiply(vec, this.Transformation.Matrix);
+            float[] aux = Utils.Helper.Multiply1(vec, this.Transformation.Matrix);
 
             return new Vector3(aux[0], aux[1], aux[2]);
         }
@@ -56,8 +56,8 @@
             Matrix4x4 invertMatrix;
             Matrix4x4.Invert(transformation.Matrix, out invertMatrix);
 
-            float[] directionMatrix = Utils.Helper.Multiply(dir, invertMatrix);
-            float[] originMatrix = Utils.Helper.Multiply(orig, invertMatrix);
+            float[] directionMatrix = Utils.Helper.Multiply1(dir, invertMatrix);
+            float[] originMatrix = Utils.Helper.Multiply1(orig, invertMatrix);
 
             ray.Direction = Vector3.Normalize(new Vector3(directionMatrix[0], directionMatrix[1], directionMatrix[2]));
             ray.Origin = new Vector3(originMatrix[0], originMatrix[1], originMatrix[2]);

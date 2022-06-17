@@ -50,6 +50,8 @@
 
             this.loadedLabel.Visible = true;
             this.startBtn.Enabled = true;
+            this.height.Value = this.context.ImageScene.Vertical;
+            this.width.Value = this.context.ImageScene.Horizontal;
         }
 
         private void startBtn_Click(object sender, EventArgs e)
@@ -63,6 +65,9 @@
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
+
+            this.progressBar1.Maximum = this.context.ImageScene.Horizontal* this.context.ImageScene.Vertical;
+            this.progressBar1.Step = 1;
 
             this.PrimaryCalculations();
 
@@ -128,6 +133,26 @@
         private void environmentReflection_CheckedChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void height_ValueChanged(object sender, EventArgs e)
+        {
+            var num = sender as NumericUpDown;
+
+            if(this.context.ImageScene != null)
+            {
+                this.context.ImageScene.Vertical = (int)num.Value;
+            }
+        }
+
+        private void width_ValueChanged(object sender, EventArgs e)
+        {
+            var num = sender as NumericUpDown;
+
+            if (this.context.ImageScene != null)
+            {
+                this.context.ImageScene.Horizontal = (int)num.Value;
+            }
         }
     }
 }
