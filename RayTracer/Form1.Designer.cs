@@ -31,13 +31,11 @@
         {
             this.loadBtn = new System.Windows.Forms.Button();
             this.saveBtn = new System.Windows.Forms.Button();
-            this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.environmentReflection = new System.Windows.Forms.CheckBox();
             this.difuseReflection = new System.Windows.Forms.CheckBox();
             this.specularReflection = new System.Windows.Forms.CheckBox();
             this.refraction = new System.Windows.Forms.CheckBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.renderingLabel = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.label1 = new System.Windows.Forms.Label();
             this.startBtn = new System.Windows.Forms.Button();
@@ -50,6 +48,8 @@
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.loadedLabel = new System.Windows.Forms.Label();
             this.labelTime = new System.Windows.Forms.Label();
+            this.pictureBox2 = new System.Windows.Forms.PictureBox();
+            this.label4 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.recursion)).BeginInit();
@@ -57,6 +57,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.width)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.height)).BeginInit();
             this.groupBox3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.SuspendLayout();
             // 
             // loadBtn
@@ -79,13 +80,6 @@
             this.saveBtn.Text = "SAVE SCENE";
             this.saveBtn.UseVisualStyleBackColor = true;
             this.saveBtn.Click += new System.EventHandler(this.saveBtn_Click);
-            // 
-            // progressBar1
-            // 
-            this.progressBar1.Location = new System.Drawing.Point(439, 605);
-            this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(200, 41);
-            this.progressBar1.TabIndex = 7;
             // 
             // environmentReflection
             // 
@@ -137,24 +131,17 @@
             // 
             this.pictureBox1.Location = new System.Drawing.Point(205, 12);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(573, 387);
+            this.pictureBox1.Size = new System.Drawing.Size(573, 455);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.pictureBox1.TabIndex = 12;
             this.pictureBox1.TabStop = false;
-            // 
-            // renderingLabel
-            // 
-            this.renderingLabel.AutoSize = true;
-            this.renderingLabel.Location = new System.Drawing.Point(307, 615);
-            this.renderingLabel.Name = "renderingLabel";
-            this.renderingLabel.Size = new System.Drawing.Size(0, 20);
-            this.renderingLabel.TabIndex = 3;
             // 
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.startBtn);
             this.groupBox1.Controls.Add(this.recursion);
-            this.groupBox1.Location = new System.Drawing.Point(280, 423);
+            this.groupBox1.Location = new System.Drawing.Point(278, 473);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(373, 141);
             this.groupBox1.TabIndex = 6;
@@ -199,7 +186,7 @@
             this.groupBox2.Controls.Add(this.environmentReflection);
             this.groupBox2.Controls.Add(this.difuseReflection);
             this.groupBox2.Controls.Add(this.refraction);
-            this.groupBox2.Location = new System.Drawing.Point(687, 423);
+            this.groupBox2.Location = new System.Drawing.Point(685, 473);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(250, 250);
             this.groupBox2.TabIndex = 13;
@@ -255,7 +242,7 @@
             this.groupBox3.Controls.Add(this.loadedLabel);
             this.groupBox3.Controls.Add(this.loadBtn);
             this.groupBox3.Controls.Add(this.saveBtn);
-            this.groupBox3.Location = new System.Drawing.Point(22, 423);
+            this.groupBox3.Location = new System.Drawing.Point(20, 473);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(208, 250);
             this.groupBox3.TabIndex = 14;
@@ -275,23 +262,43 @@
             // labelTime
             // 
             this.labelTime.AutoSize = true;
-            this.labelTime.Location = new System.Drawing.Point(416, 666);
+            this.labelTime.Location = new System.Drawing.Point(454, 676);
             this.labelTime.Name = "labelTime";
             this.labelTime.Size = new System.Drawing.Size(0, 20);
             this.labelTime.TabIndex = 15;
+            // 
+            // pictureBox2
+            // 
+            this.pictureBox2.Image = global::RayTracer.Properties.Resources.Loading_icon;
+            this.pictureBox2.Location = new System.Drawing.Point(278, 634);
+            this.pictureBox2.Name = "pictureBox2";
+            this.pictureBox2.Size = new System.Drawing.Size(110, 102);
+            this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this.pictureBox2.TabIndex = 16;
+            this.pictureBox2.TabStop = false;
+            this.pictureBox2.Visible = false;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(491, 650);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(96, 20);
+            this.label4.TabIndex = 17;
+            this.label4.Text = "Render Time:";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1019, 719);
+            this.ClientSize = new System.Drawing.Size(1019, 758);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.pictureBox2);
             this.Controls.Add(this.labelTime);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.renderingLabel);
             this.Controls.Add(this.pictureBox1);
-            this.Controls.Add(this.progressBar1);
             this.Name = "Form1";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
@@ -305,6 +312,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.height)).EndInit();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -314,13 +322,11 @@
 
         private System.Windows.Forms.Button loadBtn;
         private System.Windows.Forms.Button saveBtn;
-        private System.Windows.Forms.ProgressBar progressBar1;
         private System.Windows.Forms.CheckBox environmentReflection;
         private System.Windows.Forms.CheckBox difuseReflection;
         private System.Windows.Forms.CheckBox specularReflection;
         private System.Windows.Forms.CheckBox refraction;
         private System.Windows.Forms.PictureBox pictureBox1;
-        private System.Windows.Forms.Label renderingLabel;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button startBtn;
@@ -333,6 +339,8 @@
         private System.Windows.Forms.NumericUpDown width;
         private System.Windows.Forms.NumericUpDown height;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.PictureBox pictureBox2;
+        private System.Windows.Forms.Label label4;
     }
 }
 

@@ -4,6 +4,7 @@
     using System.Diagnostics;
     using System.Drawing.Imaging;
     using System.IO;
+    using System.Threading;
     using System.Windows.Forms;
     using RayTracer.Service;
     using RayTracer.Strategies;
@@ -12,7 +13,7 @@
     {
         private Parser parser = new Parser();
         public ObjectContext context = new ObjectContext();
-        private RaysService raysService = new RaysService();
+        private RayTracer rayTracer = new RayTracer();
 
         public Form1()
         {
@@ -56,30 +57,57 @@
 
         private void startBtn_Click(object sender, EventArgs e)
         {
-            this.renderingLabel.Text = "Rendering...";
+            try
+            {
+                Thread threadInput = new Thread(this.DisplayDataAndCalculate);
+                threadInput.Start();
+            }
+            catch (Exception ex)
+            {
+            }
+        }
 
+        private void DisplayDataAndCalculate()
+        {
+            var stopWatch = new Stopwatch();
+            stopWatch.Start();
+            this.SetLoading(true);
             this.context.IsEnvironmentEnabled = this.environmentReflection.Checked;
             this.context.IsReflectionEnabled = this.specularReflection.Checked;
             this.context.IsDiffuseReflectionEnabled = this.difuseReflection.Checked;
             this.context.IsRefractionEnabled = this.refraction.Checked;
 
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
-
-            this.progressBar1.Maximum = this.context.ImageScene.Horizontal* this.context.ImageScene.Vertical;
-            this.progressBar1.Step = 1;
-
             this.PrimaryCalculations();
 
-            var t = TimeSpan.FromMilliseconds(stopwatch.ElapsedMilliseconds);
+            var t = TimeSpan.FromMilliseconds(stopWatch.ElapsedMilliseconds);
+            var time = $"Successfully Rendered in \n" + 
+                (t.Minutes == 0 ? 
+                $"{t.Seconds}.{t.Milliseconds} " + "seconds." : 
+                $"{t.Minutes}:{t.Seconds}.{t.Milliseconds} minutes.");
+            this.SetLoading(false, time);
+        }
 
-            this.labelTime.Text = "Successfully Rendered in " + string.Format("{0:D2}:{1:D2}.{2:D3}",
-            t.Minutes,
-            t.Seconds,
-            t.Milliseconds);
-
-            this.renderingLabel.Text = "Scene Rendered!";
-            this.saveBtn.Enabled = true;
+        private void SetLoading(bool displayLoader, string time = null)
+        {
+            if (displayLoader)
+            {
+                this.Invoke((MethodInvoker)delegate
+                {
+                    this.pictureBox2.Image = Properties.Resources.Loading_icon;
+                    this.pictureBox2.Visible = true;
+                    this.Cursor = System.Windows.Forms.Cursors.WaitCursor;
+                });
+            }
+            else
+            {
+                this.Invoke((MethodInvoker)delegate
+                {
+                    this.pictureBox2.Image = Properties.Resources.CheckImage;
+                    this.Cursor = System.Windows.Forms.Cursors.Default;
+                    this.labelTime.Text = time;
+                    this.saveBtn.Enabled = true;
+                });
+            }
         }
 
         private void PrimaryCalculations()
@@ -92,7 +120,7 @@
             var projectionWidth = projectionHeight * imageScene.Horizontal / imageScene.Vertical;
             var pixelDimension = projectionHeight / imageScene.Vertical; // size of the pixel (the sides are equal since they are a square)
 
-            this.raysService.CalculatePrimaryRays(cameraScene, imageScene, projectionHeight, projectionWidth, pixelDimension, this.pictureBox1, this.context);
+            this.rayTracer.CalculatePrimaryRays(cameraScene, imageScene, projectionHeight, projectionWidth, pixelDimension, this.pictureBox1, this.context);
         }
 
         private void recursion_ValueChanged(object sender, EventArgs e)

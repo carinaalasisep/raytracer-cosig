@@ -5,17 +5,14 @@
 
     public class Box : Object3D
     {
-        private Vector3 minVector;
-        private Vector3 maxVector;
         private float tnear = 0.0f;
         private float tfar = 0.0f;
+        private readonly double kEpsilon = 0.001;
 
         public Box(int transformation, int material)
         {
             this.TransformationIndex = transformation;
             this.Material = material;
-            this.minVector = new Vector3(-0.5f, -0.5f, -0.5f);
-            this.maxVector = new Vector3(0.5f, 0.5f, 0.5f);
         }
 
         public override bool Intersect(Ray ray, Hit hit, Vector3 origin)
@@ -27,9 +24,9 @@
                     ray.Origin.Y + ray.Direction.Y * this.tnear,
                     ray.Origin.Z + ray.Direction.Z * this.tnear);
 
-                this.ObjectCoordToWorldCoord(ray,hit, resultIntersect, origin);
+                this.ObjectCoordToWorldCoord(hit, resultIntersect, origin);
 
-                if (hit.Distance > Utils.Constants.Epsilon && hit.Distance < hit.MinDistance)
+                if (hit.Distance > this.kEpsilon && hit.Distance < hit.MinDistance)
                 {
                     hit.Found = true;
 
@@ -42,13 +39,13 @@
                     switch (axis)
                     {
                         case 0:
-                            hit.IntersectionNormal = this.ConvertNormalToWorld(new Vector3(Math.Sign(resultIntersect.X), 0, 0));
+                            hit.IntersectionNormal = this.ConvertNormalToWorld(new Vector3(Math.Sign(normal.X), 0, 0));
                             break;
                         case 1:
-                            hit.IntersectionNormal = this.ConvertNormalToWorld(new Vector3(0, Math.Sign(resultIntersect.Y), 0));
+                            hit.IntersectionNormal = this.ConvertNormalToWorld(new Vector3(0, Math.Sign(normal.Y), 0));
                             break;
                         case 2:
-                            hit.IntersectionNormal = this.ConvertNormalToWorld(new Vector3(0, 0, Math.Sign(resultIntersect.Z)));
+                            hit.IntersectionNormal = this.ConvertNormalToWorld(new Vector3(0, 0, Math.Sign(normal.Z)));
                             break;
                     }
 
@@ -59,13 +56,11 @@
             return false;
         }
 
-        //TODO: rever e tentar evitar codigo repetido
         private bool IntersectXAxis(Ray ray, ref int axis)
         {
             //If parallel
             if (ray.Direction.X == 0)
             {
-
                 if (ray.Origin.X < -0.5 || ray.Origin.X > 0.5)
                 {
                     return false;
@@ -73,7 +68,6 @@
 
                 this.tnear = float.MinValue;
                 this.tfar = float.MaxValue;
-
             }
             else
             {
@@ -85,7 +79,7 @@
                     Utils.Helper.Swap(ref this.tnear, ref this.tfar);
                 }
 
-                if (this.tfar < Utils.Constants.Epsilon) //Se aparecer acne trocar 0 para kEpsilon
+                if (this.tfar < this.kEpsilon)
                 {
                     return false;
                 }
@@ -106,7 +100,6 @@
                 {
                     return false;
                 }
-
             }
             else
             {
@@ -129,7 +122,7 @@
                     this.tfar = t2;
                 }
 
-                if (this.tnear > this.tfar || this.tfar < Utils.Constants.Epsilon) //Se aparecer acne trocar 0 para kEpsilon
+                if (this.tnear > this.tfar || this.tfar < this.kEpsilon)
                 {
                     return false;
                 }
@@ -170,7 +163,7 @@
                     this.tfar = t2;
                 }
 
-                if (this.tnear > this.tfar || this.tfar < Utils.Constants.Epsilon) //Se aparecer acne trocar 0 para kEpsilon
+                if (this.tnear > this.tfar || this.tfar < this.kEpsilon)
                 {
                     return false;
                 }

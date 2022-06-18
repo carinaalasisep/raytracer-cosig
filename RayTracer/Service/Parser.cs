@@ -2,7 +2,7 @@
 {
     using System;
     using System.Linq;
-    using RayTracer.Strategies;
+    using global::RayTracer.Strategies;
 
     public class Parser
     {

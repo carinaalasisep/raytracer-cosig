@@ -5,14 +5,14 @@
     using System.Numerics;
     using System.Threading.Tasks;
     using System.Windows.Forms;
-    using RayTracer.Model;
-    using RayTracer.Strategies;
+    using global::RayTracer.Model;
+    using global::RayTracer.Strategies;
 
-    public class RaysService
+    public class RayTracer
     {
         public void CalculatePrimaryRays(
             Camera cameraScene,
-            RayTracer.Model.Image imageScene,
+            global::RayTracer.Model.Image imageScene,
             double projectionHeight,
             double projectionWidth,
             double pixelDimension,

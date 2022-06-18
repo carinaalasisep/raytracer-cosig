@@ -23,8 +23,7 @@
             Matrix4x4 invertMatrix;
             Matrix4x4.Invert(this.Transformation.Matrix, out invertMatrix);
 
-            Matrix4x4 transposeMatrix;
-            transposeMatrix = Matrix4x4.Transpose(invertMatrix);
+            var transposeMatrix = Matrix4x4.Transpose(invertMatrix);
 
             float[] normalObject = { normal.X, normal.Y, normal.Z, 0.0f };
 
@@ -33,7 +32,7 @@
             return Vector3.Normalize(new Vector3(normalWorld[0], normalWorld[1], normalWorld[2]));
         }
 
-        public void ObjectCoordToWorldCoord(Ray ray, Hit hit, Vector3 intersectionPoint, Vector3 origin)
+        public void ObjectCoordToWorldCoord(Hit hit, Vector3 intersectionPoint, Vector3 origin)
         {
             hit.IntersectionPoint = this.ObjectCoordToWorldCoordVector(intersectionPoint);
 
