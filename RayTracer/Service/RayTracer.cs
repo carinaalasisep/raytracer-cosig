@@ -106,7 +106,7 @@
                 obj.Intersect(transformatedRay, hit, origin);
             }
 
-            var color = new Color3 { Red = 0, Green = 0, Blue = 0 }; // inicialização
+            var color = new Color3 { Red = 0, Green = 0, Blue = 0 };
 
             if (hit.Found)
             {

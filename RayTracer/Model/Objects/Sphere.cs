@@ -9,9 +9,6 @@
 
         public override bool Intersect(Ray ray, Hit hit, Vector3 origin)
         {
-            //Taken from
-            //https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-sphere-intersection
-
             // geometric solution
             var distanceFromRayToOrigin = Vector3.Zero - ray.Origin; 
             var tca = Vector3.Dot(distanceFromRayToOrigin, ray.Direction); 

@@ -45,8 +45,6 @@
 
         public override bool Intersect(Ray ray, Hit hit, Vector3 origin)
         {
-            // Taken from https://stackoverflow.com/questions/54617181/problem-in-rendering-triangle-mesh-with-reflections-in-webgl-and-opengles
-
             var v0v1 = Vector3.Subtract(this.P1, this.P0);
             var v0v2 = Vector3.Subtract(this.P2, this.P0);
 
@@ -104,9 +102,9 @@
                 hit.MinDistance = hit.Distance;
                 hit.Found = true;
                 hit.Material = this.Material;
-                Vector3 normal = Vector3.Cross(v0v1, v0v2);
+                Vector3 crossedVector = Vector3.Cross(v0v1, v0v2);
 
-                hit.IntersectionNormal = this.ConvertNormalToWorld(Vector3.Normalize(normal));
+                hit.IntersectionNormal = this.ConvertNormalToWorld(Vector3.Normalize(crossedVector));
 
                 return true;
             }

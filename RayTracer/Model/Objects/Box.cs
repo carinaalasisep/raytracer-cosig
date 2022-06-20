@@ -29,32 +29,32 @@
                 if (hit.Distance > this.kEpsilon && hit.Distance < hit.MinDistance)
                 {
                     hit.Found = true;
-
                     hit.MinDistance = hit.Distance;
-
                     hit.Material = this.Material;
 
-                    switch (axis)
-                    {
-                        case 0:
-                            var normalX = resultIntersect.X > 0 ? 1 : -1;
-                            hit.IntersectionNormal = this.ConvertNormalToWorld(new Vector3(Math.Sign(normalX), 0, 0));
-                            break;
-                        case 1:
-                            var normalY = resultIntersect.Y > 0 ? 1 : -1;
-                            hit.IntersectionNormal = this.ConvertNormalToWorld(new Vector3(0, Math.Sign(normalY), 0));
-                            break;
-                        case 2:
-                            var normalZ = resultIntersect.Z > 0 ? 1 : -1;
-                            hit.IntersectionNormal = this.ConvertNormalToWorld(new Vector3(0, 0, Math.Sign(normalZ)));
-                            break;
-                    }
+                    hit.IntersectionNormal = this.GetIntersectionNormal(axis, resultIntersect);
 
                     return true;
                 }
             }
 
             return false;
+        }
+
+        private Vector3 GetIntersectionNormal(int axis, Vector3 resultIntersect)
+        {
+            switch (axis)
+            {
+                default:
+                    var normalX = resultIntersect.X > 0 ? 1 : -1;
+                    return this.ConvertNormalToWorld(new Vector3(Math.Sign(normalX), 0, 0));
+                case 1:
+                    var normalY = resultIntersect.Y > 0 ? 1 : -1;
+                    return this.ConvertNormalToWorld(new Vector3(0, Math.Sign(normalY), 0));
+                case 2:
+                    var normalZ = resultIntersect.Z > 0 ? 1 : -1;
+                    return this.ConvertNormalToWorld(new Vector3(0, 0, Math.Sign(normalZ)));
+            }
         }
 
         private bool IntersectXAxis(Ray ray, ref int axis)
@@ -84,7 +84,6 @@
                 {
                     return false;
                 }
-
             }
 
             axis = 0;
