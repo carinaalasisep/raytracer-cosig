@@ -52,14 +52,15 @@
 
             this.ObjectCoordToWorldCoord(hit, intersectionPoint, origin);
 
-            var normalIntersectionPoint = Vector3.Normalize(intersectionPoint);
-
             if (hit.Distance > Utils.Constants.Epsilon && hit.Distance < hit.MinDistance)
             {
                 hit.MinDistance = hit.Distance;
                 hit.Found = true;
                 hit.Material = this.Material;
-                hit.IntersectionNormal = this.ConvertNormalToWorld(normalIntersectionPoint);
+
+                // a normal de uma esfera centrada na origem de raio 1, é igual à do ponto
+                // de intersecção, ou seja, nao precisamos de normalizar sequer
+                hit.IntersectionNormal = this.ConvertNormalToWorld(intersectionPoint); 
 
                 return true;
             }

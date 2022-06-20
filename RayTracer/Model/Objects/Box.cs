@@ -34,18 +34,19 @@
 
                     hit.Material = this.Material;
 
-                    var normal = Vector3.Normalize(resultIntersect);
-
                     switch (axis)
                     {
                         case 0:
-                            hit.IntersectionNormal = this.ConvertNormalToWorld(new Vector3(Math.Sign(normal.X), 0, 0));
+                            var normalX = resultIntersect.X > 0 ? 1 : -1;
+                            hit.IntersectionNormal = this.ConvertNormalToWorld(new Vector3(Math.Sign(normalX), 0, 0));
                             break;
                         case 1:
-                            hit.IntersectionNormal = this.ConvertNormalToWorld(new Vector3(0, Math.Sign(normal.Y), 0));
+                            var normalY = resultIntersect.Y > 0 ? 1 : -1;
+                            hit.IntersectionNormal = this.ConvertNormalToWorld(new Vector3(0, Math.Sign(normalY), 0));
                             break;
                         case 2:
-                            hit.IntersectionNormal = this.ConvertNormalToWorld(new Vector3(0, 0, Math.Sign(normal.Z)));
+                            var normalZ = resultIntersect.Z > 0 ? 1 : -1;
+                            hit.IntersectionNormal = this.ConvertNormalToWorld(new Vector3(0, 0, Math.Sign(normalZ)));
                             break;
                     }
 
